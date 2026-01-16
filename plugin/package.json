@@ -1,0 +1,17 @@
+{
+    "name": "multiplayer-mod",
+    "version": "0.3.0",
+    "description": "SillyTavern 联机Mod - 多人协作角色扮演WebSocket服务器",
+    "main": "index.js",
+    "author": "联机Mod开发者",
+    "license": "MIT",
+    "dependencies": {
+        "ws": "^8.14.0"
+    },
+    "keywords": [
+        "sillytavern",
+        "plugin",
+        "multiplayer",
+        "websocket"
+    ]
+}
