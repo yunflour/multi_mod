@@ -1,0 +1,9 @@
+{
+  "name": "multiplayer-mod",
+  "version": "1.0.0",
+  "description": "SillyTavern 联机Mod 服务端插件",
+  "main": "index.js",
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+}
