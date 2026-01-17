@@ -128,38 +128,82 @@ install_plugin() {
         rm -rf "$SERVER_PATH"
     fi
     
-    cd plugins
+    # 创建临时目录用于克隆
+    TEMP_DIR=$(mktemp -d)
     log_info "正在从 GitHub 下载联机Mod..."
     
-    if git clone "$REPO_URL" "$PLUGIN_DIR_NAME"; then
+    if git clone "$REPO_URL" "$TEMP_DIR/repo"; then
         log_success "联机Mod 源码下载成功。"
         
-        # 进入插件目录，复制plugin文件夹内容
-        cd "$PLUGIN_DIR_NAME"
+        cd "$TEMP_DIR/repo"
         
-        if [ -d "plugin" ]; then
-            log_info "正在配置插件结构..."
-            # 将plugin文件夹内容移动到根目录
-            cp -r plugin/* .
-            rm -rf plugin
-            log_success "插件结构配置完成。"
+        # 检查是否有 build.js（新版构建系统）
+        if [ -f "build.js" ]; then
+            log_info "检测到构建系统，正在生成插件版本..."
+            
+            # 安装构建依赖
+            if [ -f "package.json" ] && command -v npm &> /dev/null; then
+                npm install --production 2>/dev/null
+            fi
+            
+            # 运行构建脚本
+            if command -v node &> /dev/null; then
+                node build.js
+                if [ $? -eq 0 ]; then
+                    log_success "构建完成。"
+                else
+                    log_error "构建失败！"
+                    rm -rf "$TEMP_DIR"
+                    return 1
+                fi
+            else
+                log_error "未检测到 Node.js！请先安装 Node.js。"
+                rm -rf "$TEMP_DIR"
+                return 1
+            fi
+            
+            # 复制生成的插件版本到酒馆
+            if [ -d "dist/plugin" ]; then
+                log_info "正在安装插件..."
+                mkdir -p "$OLDPWD/plugins/$PLUGIN_DIR_NAME"
+                cp -r dist/plugin/* "$OLDPWD/plugins/$PLUGIN_DIR_NAME/"
+                log_success "插件安装完成。"
+            else
+                log_error "未找到生成的插件文件！"
+                rm -rf "$TEMP_DIR"
+                return 1
+            fi
+        # 兼容旧版结构（有 plugin 文件夹）
+        elif [ -d "plugin" ]; then
+            log_info "检测到旧版结构，正在配置..."
+            mkdir -p "$OLDPWD/plugins/$PLUGIN_DIR_NAME"
+            cp -r plugin/* "$OLDPWD/plugins/$PLUGIN_DIR_NAME/"
+            log_success "插件安装完成。"
+        else
+            log_error "无法识别的仓库结构！"
+            rm -rf "$TEMP_DIR"
+            return 1
         fi
         
-        # 安装依赖
+        # 清理临时目录
+        cd "$OLDPWD"
+        rm -rf "$TEMP_DIR"
+        
+        # 进入插件目录安装运行时依赖
+        cd "plugins/$PLUGIN_DIR_NAME"
         if [ -f "package.json" ] && command -v npm &> /dev/null; then
-            log_info "正在安装 npm 依赖..."
+            log_info "正在安装插件运行时依赖..."
             npm install --production 2>/dev/null
             if [ $? -eq 0 ]; then
                 log_success "依赖安装完成。"
             else
-                log_warn "npm 依赖安装失败，请手动运行: cd plugins/$PLUGIN_DIR_NAME && npm install"
+                log_warn "依赖安装失败，WebSocket模块可能需要手动安装: npm install ws"
             fi
         fi
-        
         cd ../..
     else
         log_error "下载失败！请检查网络连接或代理设置。"
-        cd ..
+        rm -rf "$TEMP_DIR"
         return 1
     fi
 
@@ -200,38 +244,12 @@ update_plugin() {
         return
     fi
     
-    cd "$SERVER_PATH"
+    # 删除旧版本并重新安装
+    log_info "正在删除旧版本..."
+    rm -rf "$SERVER_PATH"
     
-    if [ -d ".git" ]; then
-        log_info "正在从 GitHub 拉取最新代码..."
-        git pull origin main
-        
-        if [ $? -eq 0 ]; then
-            # 重新配置插件结构
-            if [ -d "plugin" ]; then
-                cp -r plugin/* .
-                rm -rf plugin
-            fi
-            
-            # 更新依赖
-            if [ -f "package.json" ] && command -v npm &> /dev/null; then
-                npm install --production 2>/dev/null
-            fi
-            
-            log_success "联机Mod 已更新到最新版本！"
-        else
-            log_error "更新失败，请检查网络连接。"
-        fi
-    else
-        log_warn "插件目录不是 Git 仓库，将重新安装。"
-        cd ../..
-        rm -rf "$SERVER_PATH"
-        install_plugin
-        return
-    fi
-    
-    cd ../..
-    echo -e "\n${GREEN}✅ 更新完成！请重启酒馆以生效。${NC}"
+    # 重新安装
+    install_plugin
 }
 
 # ------------------------------------------
