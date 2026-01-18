@@ -201,13 +201,28 @@ export class WebSocketNetworkManager implements INetworkManager {
   private _userId = generateId();
   private userName = '';
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  
+  // 心跳相关
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private pendingPong = false;
+  private missedPongs = 0;
+  private _isStable = true;  // 连接是否稳定
+  private lastConnectUrl = '';
+  private lastConnectPassword: string | undefined;
+  private onStabilityChange: ((stable: boolean) => void) | null = null;
 
   get isServer() { return this._isServer; }
   get isConnected() { return this._isConnected; }
   get userId() { return this._userId; }
+  get isStable() { return this._isStable; }
 
   init(handlers: NetworkEventHandlers): void {
     this.handlers = handlers;
+  }
+  
+  /** 设置连接稳定性变化回调 */
+  setStabilityCallback(callback: (stable: boolean) => void): void {
+    this.onStabilityChange = callback;
   }
 
   async startServer(_config: RoomConfig): Promise<void> {
@@ -216,31 +231,60 @@ export class WebSocketNetworkManager implements INetworkManager {
   }
 
   async connect(ip: string, port: number, password?: string): Promise<void> {
+    const wsUrl = `ws://${ip}:${port}`;
+    return this.connectToUrl(wsUrl, password);
+  }
+
+  /** 直接连接到 WebSocket URL（用于在线模式） */
+  async connectToUrl(wsUrl: string, password?: string): Promise<void> {
+    // 保存连接信息用于重连
+    this.lastConnectUrl = wsUrl;
+    this.lastConnectPassword = password;
+    
+    // 确保只维持单一连接：先关闭已存在的连接
+    if (this.ws) {
+      console.log('[联机Mod] 关闭旧连接，准备创建新连接');
+      this.stopHeartbeat();
+      const oldWs = this.ws;
+      this.ws = null;
+      try {
+        oldWs.close(4005, '被新连接替换');
+      } catch (e) {
+        // 忽略关闭错误
+      }
+    }
+    
     return new Promise((resolve, reject) => {
       try {
-        const wsUrl = `ws://${ip}:${port}`;
         this.ws = new WebSocket(wsUrl);
-        // 只有在用户名为空时才使用默认用户名
         if (!this.userName) {
           this.userName = `用户${this._userId.substring(0, 4)}`;
         }
 
         this.ws.onopen = () => {
           this._isConnected = true;
+          this._isStable = true;
+          this.missedPongs = 0;
           this.handlers?.onConnectionChange(true);
+          this.onStabilityChange?.(true);
           
-          // 发送加入消息
           this.send({
             type: 'join',
             data: { name: this.userName, password },
           });
           
+          // 启动心跳
+          this.startHeartbeat();
+          
           resolve();
         };
 
         this.ws.onclose = () => {
+          this.stopHeartbeat();
           this._isConnected = false;
+          this._isStable = false;
           this.handlers?.onConnectionChange(false);
+          this.onStabilityChange?.(false);
         };
 
         this.ws.onerror = (error) => {
@@ -261,8 +305,79 @@ export class WebSocketNetworkManager implements INetworkManager {
       }
     });
   }
+  
+  /** 启动心跳 */
+  private startHeartbeat(): void {
+    this.stopHeartbeat();
+    
+    this.heartbeatTimer = setInterval(() => {
+      if (!this._isConnected) return;
+      
+      // 检查上次的 pong 是否收到
+      if (this.pendingPong) {
+        this.missedPongs++;
+        console.log(`[心跳] 未收到 pong 响应 (${this.missedPongs}/3)`);
+        
+        // 任意一次没收到，标记为不稳定（黄灯）
+        if (this._isStable) {
+          this._isStable = false;
+          this.onStabilityChange?.(false);
+        }
+        
+        // 连续3次失败，软重连
+        if (this.missedPongs >= 3) {
+          console.log('[心跳] 连续3次失败，尝试软重连...');
+          this.softReconnect();
+          return;
+        }
+      }
+      
+      // 发送新的 ping
+      this.pendingPong = true;
+      this.send({
+        type: 'ping',
+        data: { timestamp: Date.now() },
+      });
+    }, 3000);
+  }
+  
+  /** 停止心跳 */
+  private stopHeartbeat(): void {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+    this.pendingPong = false;
+    this.missedPongs = 0;
+  }
+  
+  /** 软重连：关闭当前连接并重新连接 */
+  private async softReconnect(): Promise<void> {
+    this.stopHeartbeat();
+    
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+    
+    // 延迟 500ms 后重连
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    if (this.lastConnectUrl) {
+      try {
+        console.log('[心跳] 正在重连...');
+        await this.connectToUrl(this.lastConnectUrl, this.lastConnectPassword);
+        console.log('[心跳] 重连成功');
+      } catch (e) {
+        console.error('[心跳] 重连失败:', e);
+        this.handlers?.onError('重连失败');
+      }
+    }
+  }
 
   disconnect(): void {
+    this.stopHeartbeat();
+    
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -275,6 +390,7 @@ export class WebSocketNetworkManager implements INetworkManager {
     this.ws?.close();
     this.ws = null;
     this._isConnected = false;
+    this._isStable = false;
     this.handlers?.onConnectionChange(false);
   }
 
@@ -297,6 +413,18 @@ export class WebSocketNetworkManager implements INetworkManager {
 
   private handleMessage(msg: NetworkMessage): void {
     switch (msg.type) {
+      case 'pong':
+        // 收到心跳响应
+        this.pendingPong = false;
+        if (this.missedPongs > 0) {
+          console.log('[心跳] 连接恢复');
+        }
+        this.missedPongs = 0;
+        if (!this._isStable) {
+          this._isStable = true;
+          this.onStabilityChange?.(true);
+        }
+        break;
       case 'error':
         if (msg.data.targetId === this._userId) {
           this.handlers?.onError(msg.data.message);

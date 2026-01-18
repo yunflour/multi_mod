@@ -8,6 +8,7 @@ import type {
   ConnectionMode,
   INetworkManager,
   NetworkMessage,
+  OnlineRoom,
 } from './types';
 import { LocalNetworkManager, WebSocketNetworkManager } from './network';
 
@@ -15,6 +16,11 @@ import { LocalNetworkManager, WebSocketNetworkManager } from './network';
 function generateLogId(): string {
   return `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 }
+
+/** 默认在线服务器地址 */
+const DEFAULT_ONLINE_SERVER = 'https://room.yufugemini.cloud';
+const ONLINE_MODE_KEY = 'st_multiplayer_online_mode';
+const ONLINE_SERVER_KEY = 'st_multiplayer_online_server';
 
 export const useMultiplayerStore = defineStore('multiplayer', () => {
   // ============ 状态 ============
@@ -40,6 +46,34 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
   /** 是否使用WebSocket模式（默认开启） */
   const useWebSocket = ref(true);
   
+  // ============ 在线模式状态 ============
+  
+  /** 是否启用在线模式 */
+  const savedOnlineMode = localStorage.getItem(ONLINE_MODE_KEY) === 'true';
+  const onlineMode = ref(savedOnlineMode);
+  
+  /** 在线服务器地址 */
+  const savedOnlineServer = localStorage.getItem(ONLINE_SERVER_KEY) || DEFAULT_ONLINE_SERVER;
+  const onlineServerUrl = ref(savedOnlineServer);
+  
+  /** 在线房间列表 */
+  const onlineRooms = ref<OnlineRoom[]>([]);
+  
+  /** 当前在线房间ID */
+  const currentOnlineRoomId = ref<string | null>(null);
+  
+  /** 是否正在加载房间列表 */
+  const isLoadingRooms = ref(false);
+  
+  // 监听在线模式状态变化并保存
+  watch(onlineMode, (newVal) => {
+    localStorage.setItem(ONLINE_MODE_KEY, String(newVal));
+  });
+  
+  watch(onlineServerUrl, (newVal) => {
+    localStorage.setItem(ONLINE_SERVER_KEY, newVal);
+  });
+  
   /** 连接的用户列表 */
   const users = ref<ConnectedUser[]>([]);
   
@@ -47,7 +81,12 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
   const chatLogs = ref<ChatLogItem[]>([]);
   
   /** 待整合的用户输入（房主用） */
-  const pendingInputs = ref<Map<string, { userName: string; content: string }>>(new Map());
+  const pendingInputs = ref<Map<string, { 
+    userName: string; 
+    content: string;
+    messagePrefix?: string;
+    messageSuffix?: string;
+  }>>(new Map());
   
   /** 是否正在等待AI回复 */
   const isWaitingForAi = ref(false);
@@ -80,6 +119,9 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     return pendingInputs.value.size >= users.value.length;
   });
   
+  /** 连接是否稳定（心跳正常） */
+  const isConnectionStable = ref(true);
+  
   // ============ 网络管理器 ============
   
   let networkManager: INetworkManager | null = null;
@@ -103,8 +145,19 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     }
   }
   
-  /** 初始化网络管理器 */
+  /** 初始化网络管理器（复用已有实例，避免重复创建） */
   function initNetworkManager() {
+    // 如果已有 manager，先断开旧连接但复用实例
+    if (networkManager) {
+      // 已存在 manager，只需断开旧连接
+      if (networkManager.isConnected) {
+        console.log('[联机Mod] 复用已有 NetworkManager，断开旧连接');
+        networkManager.disconnect();
+      }
+      return;  // 复用现有实例
+    }
+    
+    // 首次创建
     networkManager = useWebSocket.value 
       ? new WebSocketNetworkManager() 
       : new LocalNetworkManager();
@@ -116,6 +169,13 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
       onError: handleError,
       onConnectionChange: handleConnectionChange,
     });
+    
+    // 设置心跳稳定性回调（仅 WebSocket 模式）
+    if (useWebSocket.value && (networkManager as any).setStabilityCallback) {
+      (networkManager as any).setStabilityCallback((stable: boolean) => {
+        isConnectionStable.value = stable;
+      });
+    }
   }
   
   /** 启动服务端 */
@@ -611,6 +671,130 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     }
   }
   
+  // ============ 在线模式方法 ============
+  
+  /** 获取在线房间列表 */
+  async function fetchOnlineRooms() {
+    if (!onlineMode.value) return;
+    
+    isLoadingRooms.value = true;
+    try {
+      const response = await fetch(`${onlineServerUrl.value}/rooms`);
+      if (!response.ok) throw new Error('获取房间列表失败');
+      const data = await response.json();
+      onlineRooms.value = data.rooms || [];
+      addLog('system', '系统', `获取到 ${onlineRooms.value.length} 个在线房间`);
+    } catch (error: any) {
+      addLog('error', '系统', `获取房间列表失败: ${error.message}`);
+      throw error;
+    } finally {
+      isLoadingRooms.value = false;
+    }
+  }
+  
+  /** 创建在线房间 */
+  async function createOnlineRoom(roomName: string, password?: string, maxUsers?: number) {
+    if (!onlineMode.value) {
+      addLog('error', '系统', '请先启用在线模式');
+      return null;
+    }
+    
+    try {
+      const response = await fetch(`${onlineServerUrl.value}/rooms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: roomName,
+          password: password || undefined,
+          maxUsers: maxUsers || 8,
+          creatorName: userName.value || '匿名',
+        }),
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || '创建房间失败');
+      }
+      
+      const data = await response.json();
+      addLog('system', '系统', `房间 "${data.name}" 创建成功`);
+      
+      // 创建成功后自动加入
+      if (data.id) {
+        await joinOnlineRoom(data.id, password);
+      }
+      
+      return data;
+    } catch (error: any) {
+      addLog('error', '系统', `创建房间失败: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  /** 加入在线房间 */
+  async function joinOnlineRoom(roomId: string, password?: string) {
+    if (!onlineMode.value) {
+      addLog('error', '系统', '请先启用在线模式');
+      return;
+    }
+    
+    try {
+      // 先获取房间连接信息
+      const response = await fetch(`${onlineServerUrl.value}/rooms/${roomId}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || '加入房间失败');
+      }
+      
+      const data = await response.json();
+      
+      // 构建 WebSocket URL
+      const wsBaseUrl = onlineServerUrl.value.replace('https://', 'wss://').replace('http://', 'ws://');
+      const wsUrl = `${wsBaseUrl}/ws/room/${roomId}`;
+      
+      addLog('system', '系统', `正在连接到房间 "${data.name}"...`);
+      console.log('[联机Mod] WebSocket URL:', wsUrl);
+      
+      // 初始化网络管理器并连接
+      initNetworkManager();
+      
+      // 设置用户名
+      if (userName.value && networkManager) {
+        (networkManager as any).setUserName(userName.value);
+      }
+      
+      // 使用 WebSocket URL 连接
+      if (networkManager && (networkManager as any).connectToUrl) {
+        try {
+          await (networkManager as any).connectToUrl(wsUrl, password);
+          mode.value = 'client';
+          currentOnlineRoomId.value = roomId;
+          addLog('system', '系统', `已加入房间 "${data.name}"`);
+        } catch (wsError: any) {
+          console.error('[联机Mod] WebSocket 连接失败:', wsError);
+          addLog('error', '系统', `WebSocket 连接失败: ${wsError.message}`);
+          throw wsError;
+        }
+      } else {
+        throw new Error('网络管理器不支持 URL 连接');
+      }
+    } catch (error: any) {
+      addLog('error', '系统', `加入房间失败: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  /** 离开在线房间 */
+  function leaveOnlineRoom() {
+    disconnect();
+    currentOnlineRoomId.value = null;
+  }
+  
   // ============ 返回 ============
   
   return {
@@ -630,6 +814,14 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     hostId,
     isHost,
     allUsersSubmitted,
+    isConnectionStable,
+    
+    // 在线模式状态
+    onlineMode,
+    onlineServerUrl,
+    onlineRooms,
+    currentOnlineRoomId,
+    isLoadingRooms,
     
     // 方法
     addLog,
@@ -654,5 +846,12 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     sendRegexToUser,
     broadcastVariables,
     variableMode,
+    
+    // 在线模式方法
+    fetchOnlineRooms,
+    createOnlineRoom,
+    joinOnlineRoom,
+    leaveOnlineRoom,
   };
 });
+

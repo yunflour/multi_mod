@@ -23,6 +23,8 @@ export type MessageType =
   | 'sync_regex_request'    // 请求同步正则
   | 'sync_regex_data'       // 正则数据
   | 'sync_variables'        // 变量数据同步（通用，如MVU）
+  | 'ping'                  // 心跳请求
+  | 'pong'                  // 心跳响应
   | 'error';                // 错误消息
 
 /** 网络消息 */
@@ -80,8 +82,47 @@ export interface INetworkManager {
   init(handlers: NetworkEventHandlers): void;
   startServer(config: RoomConfig): Promise<void>;
   connect(ip: string, port: number, password?: string): Promise<void>;
+  /** 连接到指定的 WebSocket URL */
+  connectToUrl?(wsUrl: string, password?: string): Promise<void>;
   disconnect(): void;
 
   send(message: Omit<NetworkMessage, 'from' | 'fromName' | 'timestamp'>): void;
   broadcast(message: Omit<NetworkMessage, 'from' | 'fromName' | 'timestamp'>): void;
+}
+
+/** 在线房间信息 */
+export interface OnlineRoom {
+  id: string;
+  name: string;
+  hasPassword: boolean;
+  maxUsers: number;
+  currentUsers: number;
+  creatorName: string;
+  createdAt: number;
+}
+
+/** 在线房间列表响应 */
+export interface OnlineRoomsResponse {
+  rooms: OnlineRoom[];
+  maxRooms: number;
+  currentRooms: number;
+}
+
+/** 创建房间请求 */
+export interface CreateRoomRequest {
+  name: string;
+  password?: string;
+  maxUsers?: number;
+  creatorId?: string;
+  creatorName?: string;
+}
+
+/** 创建/加入房间响应 */
+export interface RoomJoinResponse {
+  id: string;
+  name: string;
+  wsUrl?: string;
+  maxUsers: number;
+  currentUsers: number;
+  error?: string;
 }

@@ -24,6 +24,9 @@ const users = new Map();
 // 房主ID（第一个加入的用户成为房主）
 let hostId = null;
 
+// 用户不活跃超时时间（毫秒）
+const USER_TIMEOUT = 10000;
+
 // 创建WebSocket服务器
 const wss = new WebSocket.Server({ port: PORT });
 
@@ -32,9 +35,61 @@ console.log('  SillyTavern 联机Mod WebSocket 服务端');
 console.log('='.repeat(50));
 console.log(`  端口: ${PORT}`);
 console.log(`  密码: ${PASSWORD || '(无)'}`);
+console.log(`  用户超时: ${USER_TIMEOUT / 1000}秒`);
 console.log('='.repeat(50));
 console.log('  等待客户端连接...');
 console.log('');
+
+// 用户不活跃检测定时器
+setInterval(() => {
+  const now = Date.now();
+  const toRemove = [];
+  
+  // 先收集需要移除的用户
+  users.forEach((user, id) => {
+    if (user.lastActivity && now - user.lastActivity > USER_TIMEOUT) {
+      toRemove.push({ id, user });
+    }
+  });
+  
+  // 然后移除（避免在 forEach 中修改 Map）
+  toRemove.forEach(({ id, user }) => {
+    log('leave', `${user.name} 因超时被断开 (${Math.floor((now - user.lastActivity) / 1000)}秒无活动)`);
+    
+    // 从 users 中移除
+    users.delete(id);
+    
+    // 关闭连接
+    if (user.ws && user.ws.readyState === WebSocket.OPEN) {
+      user.ws.close(4002, '连接超时');
+    }
+    
+    // 处理房主转让
+    if (hostId === id && users.size > 0) {
+      const newHost = users.values().next().value;
+      hostId = newHost.id;
+      log('host', `房主权限自动转让给 ${newHost.name}`);
+      broadcastAll({
+        type: 'host_change',
+        from: 'server',
+        fromName: '服务器',
+        data: { hostId: hostId, hostName: newHost.name },
+        timestamp: Date.now()
+      });
+    } else if (users.size === 0) {
+      hostId = null;
+    }
+    
+    // 广播离开消息
+    broadcast({
+      type: 'leave',
+      from: id,
+      fromName: user.name,
+      data: null,
+      timestamp: Date.now()
+    });
+  });
+}, 3000);  // 每3秒检查一次
 
 // 生成时间戳
 function timestamp() {
@@ -125,6 +180,14 @@ wss.on('connection', (ws, req) => {
     try {
       const message = JSON.parse(data.toString());
       
+      // 更新用户最后活动时间
+      if (userId) {
+        const user = users.get(userId);
+        if (user) {
+          user.lastActivity = Date.now();
+        }
+      }
+      
       switch (message.type) {
         case 'join':
           handleJoin(ws, message);
@@ -146,6 +209,16 @@ wss.on('connection', (ws, req) => {
           break;
         case 'transfer_host':
           handleTransferHost(ws, message);
+          break;
+        case 'ping':
+          // 心跳请求，立即回复 pong
+          ws.send(JSON.stringify({
+            type: 'pong',
+            from: 'server',
+            fromName: '服务器',
+            data: { timestamp: Date.now() },
+            timestamp: Date.now()
+          }));
           break;
         default:
           // 检查是否是单播消息（包含targetUserId）
@@ -187,8 +260,22 @@ wss.on('connection', (ws, req) => {
     userId = message.from;
     userName = name || message.fromName || `用户${userId.substring(0, 4)}`;
     
+    // 检查是否是重连（同 userId 已存在）
+    const existingUser = users.get(userId);
+    if (existingUser) {
+      log('info', `${userName} 重连，关闭旧连接`);
+      // 关闭旧的 WebSocket 连接
+      if (existingUser.ws && existingUser.ws !== ws && existingUser.ws.readyState === WebSocket.OPEN) {
+        existingUser.ws.close(4005, '被新连接替换');
+      }
+      // 保留房主身份
+      if (hostId === userId) {
+        log('host', `${userName} 重连并保留房主身份`);
+      }
+    }
+    
     // 第一个加入的用户成为房主
-    const isFirstUser = users.size === 0;
+    const isFirstUser = users.size === 0 && !existingUser;
     if (isFirstUser) {
       hostId = userId;
       log('host', `${userName} 成为房主`);
@@ -199,7 +286,8 @@ wss.on('connection', (ws, req) => {
       id: userId,
       name: userName,
       ready: false,
-      ws: ws
+      ws: ws,
+      lastActivity: Date.now()
     });
     
     log('join', `${userName} (${userId}) 加入了房间`);

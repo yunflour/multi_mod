@@ -29,26 +29,110 @@
             <input v-model="localUserName" placeholder="输入你的名称" class="input-field" />
           </div>
           
-          <div class="setting-row">
-            <label>服务端IP:</label>
-            <input v-model="store.serverIp" placeholder="localhost" class="input-field" />
-          </div>
+          <!-- 在线模式界面 -->
+          <template v-if="store.onlineMode">
+            <!-- 房间列表 -->
+            <div class="online-rooms-section">
+              <div class="section-header">
+                <span class="section-title">🌐 在线房间</span>
+                <button class="refresh-btn" @click="refreshRooms" :disabled="store.isLoadingRooms">
+                  {{ store.isLoadingRooms ? '⏳' : '🔄' }}
+                </button>
+              </div>
+              
+              <div class="room-list" v-if="store.onlineRooms.length > 0">
+                <div 
+                  v-for="room in store.onlineRooms" 
+                  :key="room.id"
+                  class="room-item"
+                  @click="selectRoom(room)"
+                  :class="{ selected: selectedRoomId === room.id }"
+                >
+                  <div class="room-info">
+                    <span class="room-name">{{ room.name }}</span>
+                    <span v-if="room.hasPassword" class="room-lock">🔒</span>
+                  </div>
+                  <div class="room-meta">
+                    <span class="room-users">👥 {{ room.currentUsers }}/{{ room.maxUsers }}</span>
+                    <span class="room-creator">by {{ room.creatorName }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="empty-rooms">
+                {{ store.isLoadingRooms ? '加载中...' : '暂无房间，点击下方创建' }}
+              </div>
+              
+              <!-- 加入选中房间 -->
+              <div v-if="selectedRoomId" class="join-room-section">
+                <input 
+                  v-model="joinPassword" 
+                  type="password" 
+                  placeholder="房间密码（如需要）" 
+                  class="input-field"
+                />
+                <button class="action-btn primary" @click="joinSelectedRoom">
+                  加入房间
+                </button>
+              </div>
+              
+              <!-- 创建新房间 -->
+              <div class="create-room-section">
+                <div class="section-title">➕ 创建房间</div>
+                <input 
+                  v-model="newRoomName" 
+                  placeholder="房间名称" 
+                  class="input-field"
+                />
+                <div class="create-room-options">
+                  <input 
+                    v-model="newRoomPassword" 
+                    type="password" 
+                    placeholder="密码（可选）" 
+                    class="input-field small"
+                  />
+                  <input 
+                    v-model.number="newRoomMaxUsers" 
+                    type="number" 
+                    placeholder="人数"
+                    class="input-field tiny"
+                    min="2"
+                    max="20"
+                  />
+                </div>
+                <button 
+                  class="action-btn primary" 
+                  @click="createRoom"
+                  :disabled="!newRoomName.trim()"
+                >
+                  创建并加入
+                </button>
+              </div>
+            </div>
+          </template>
           
-          <div class="setting-row">
-            <label>端口:</label>
-            <input v-model.number="store.port" type="number" class="input-field small" />
-          </div>
-          
-          <div class="setting-row">
-            <label>密码:</label>
-            <input v-model="store.roomPassword" type="password" placeholder="可选" class="input-field" />
-          </div>
-          
-          <div class="button-group">
-            <button class="action-btn primary" @click="joinRoom" :disabled="!canJoin">
-              加入房间
-            </button>
-          </div>
+          <!-- 离线模式界面（原有） -->
+          <template v-else>
+            <div class="setting-row">
+              <label>服务端IP:</label>
+              <input v-model="store.serverIp" placeholder="localhost" class="input-field" />
+            </div>
+            
+            <div class="setting-row">
+              <label>端口:</label>
+              <input v-model.number="store.port" type="number" class="input-field small" />
+            </div>
+            
+            <div class="setting-row">
+              <label>密码:</label>
+              <input v-model="store.roomPassword" type="password" placeholder="可选" class="input-field" />
+            </div>
+            
+            <div class="button-group">
+              <button class="action-btn primary" @click="joinRoom" :disabled="!canJoin">
+                加入房间
+              </button>
+            </div>
+          </template>
         </div>
       </template>
 
@@ -221,6 +305,29 @@
           <button class="icon-btn" @click="toggleSettings">×</button>
         </div>
         <div class="settings-modal-body">
+          <!-- 在线模式设置 -->
+          <div class="setting-item toggle-item">
+            <label class="toggle-label">
+              <span>🌐 在线模式:</span>
+              <input 
+                type="checkbox"
+                v-model="store.onlineMode"
+                class="toggle-checkbox"
+              />
+              <span class="toggle-switch"></span>
+            </label>
+            <small class="hint">连接到公共服务器创建/加入房间</small>
+          </div>
+          <div v-if="store.onlineMode" class="setting-item">
+            <label>服务器地址:</label>
+            <input 
+              v-model="store.onlineServerUrl" 
+              placeholder="https://room.example.com"
+              class="settings-input"
+            />
+          </div>
+          <hr class="settings-divider" />
+          
           <div class="setting-item">
             <label>默认用户名:</label>
             <input 
@@ -304,6 +411,64 @@ const hostInput = ref('');      // 房主的输入
 const hasSubmitted = ref(false); // 非房主是否已提交
 const showSettings = ref(false); // 是否显示设置面板
 
+// ============ 在线模式相关 ============
+
+const selectedRoomId = ref<string | null>(null);
+const joinPassword = ref('');
+const newRoomName = ref('');
+const newRoomPassword = ref('');
+const newRoomMaxUsers = ref(8);
+
+import type { OnlineRoom } from './types';
+
+function selectRoom(room: OnlineRoom) {
+  selectedRoomId.value = room.id;
+  joinPassword.value = '';
+}
+
+async function refreshRooms() {
+  try {
+    await store.fetchOnlineRooms();
+  } catch (e) {
+    console.error('刷新房间列表失败:', e);
+  }
+}
+
+async function joinSelectedRoom() {
+  if (!selectedRoomId.value) return;
+  try {
+    if (localUserName.value.trim()) {
+      store.userName = localUserName.value.trim();
+    }
+    await store.joinOnlineRoom(selectedRoomId.value, joinPassword.value || undefined);
+  } catch (e) {
+    console.error('加入房间失败:', e);
+  }
+}
+
+async function createRoom() {
+  if (!newRoomName.value.trim()) return;
+  try {
+    if (localUserName.value.trim()) {
+      store.userName = localUserName.value.trim();
+    }
+    await store.createOnlineRoom(
+      newRoomName.value.trim(),
+      newRoomPassword.value || undefined,
+      newRoomMaxUsers.value
+    );
+  } catch (e) {
+    console.error('创建房间失败:', e);
+  }
+}
+
+// 在线模式开启时自动刷新房间列表
+watch(() => store.onlineMode, (isOnline) => {
+  if (isOnline) {
+    refreshRooms();
+  }
+}, { immediate: true });
+
 // ============ 设置相关 ============
 
 const SETTINGS_KEY = 'st_multiplayer_settings';
@@ -360,7 +525,10 @@ function toggleSettings() {
 // ============ 计算属性 ============
 
 const statusClass = computed(() => {
-  if (store.isConnected) return 'connected';
+  if (store.isConnected) {
+    // 已连接，检查稳定性
+    return store.isConnectionStable ? 'connected' : 'unstable';
+  }
   if (store.mode !== 'disconnected') return 'connecting';
   return 'disconnected';
 });
@@ -758,6 +926,11 @@ watch(
   animation: pulse 1s infinite;
 }
 
+.status-dot.unstable {
+  background: #facc15;
+  animation: pulse 0.5s infinite;
+}
+
 .status-dot.disconnected {
   background: #666;
 }
@@ -844,6 +1017,129 @@ watch(
 
 .input-field.small {
   max-width: 80px;
+}
+
+.input-field.tiny {
+  max-width: 60px;
+}
+
+/* 在线房间列表 */
+.online-rooms-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.refresh-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.room-item {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.room-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.room-item.selected {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.room-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.room-name {
+  font-weight: 500;
+  color: #fff;
+}
+
+.room-lock {
+  font-size: 12px;
+}
+
+.room-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.empty-rooms {
+  padding: 16px;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.join-room-section {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.create-room-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-room-options {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
 }
 
 .checkbox-row {
