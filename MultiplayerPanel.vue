@@ -8,7 +8,7 @@
     <!-- 标题栏 -->
     <div class="panel-header" @mousedown="startDrag" @touchstart="startTouchDrag">
       <div class="header-left">
-        <span class="title">🎮 联机工具 v0.3</span>
+        <span class="title">🎮 联机工具 v0.4</span>
         <span class="status-dot" :class="statusClass"></span>
       </div>
       <div class="header-actions">
@@ -361,8 +361,9 @@
             <select v-model="store.variableMode" class="settings-input">
               <option value="none">无变量</option>
               <option value="mvu">MVU变量</option>
+              <option value="apotheosis">神化再临</option>
             </select>
-            <small class="hint">目前仅支持MVU</small>
+            <small class="hint">支持MVU和神化再临表数据同步</small>
           </div>
           <div class="setting-item toggle-item">
             <label class="toggle-label">

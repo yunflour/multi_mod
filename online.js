@@ -107,6 +107,10 @@ class Room {
                 });
             } else if (this.users.size === 0) {
                 this.hostId = null;
+                // 房间已空，立即删除
+                log('room', this.id, '房间已空（超时清理后），立即关闭');
+                deleteRoom(this.id);
+                return; // 房间已删除，不需要继续广播
             }
             
             // 广播离开消息
@@ -510,12 +514,10 @@ wss.on('connection', (ws, req) => {
             });
         }
         
-        // 检查是否需要关闭房间
+        // 房间人数为0时立即关闭
         if (room.currentUsers === 0) {
-            room.idleTimer = setTimeout(() => {
-                log('room', roomId, '房间空闲超时，自动关闭');
-                deleteRoom(roomId);
-            }, CONFIG.roomIdleTimeout);
+            log('room', roomId, '房间已空，立即关闭');
+            deleteRoom(roomId);
         }
     }
     

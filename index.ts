@@ -336,6 +336,290 @@ function setupTavernEventListeners() {
       console.error('变量同步失败:', error);
     }
   });
+
+  // ============ 神化再临同步 ============
+  
+  // 神化再临同步相关常量
+  const ACU_RETRY_MAX = 20;           // 最大重试次数
+  const ACU_RETRY_INTERVAL = 3000;    // 重试间隔（毫秒）
+  const ACU_DEBOUNCE_MS = 3000;       // 防抖延迟（毫秒）
+  const ACU_INIT_DELAY = 2000;        // 初始化延迟（毫秒）
+  
+  /** 获取顶层窗口（用于访问SillyTavern和神化再临API） */
+  const getTopWindow = (): any => {
+    try {
+      return window.top || window.parent || window;
+    } catch (e) {
+      return window;
+    }
+  };
+  
+  // 房主：注册神化再临更新回调，检测到更新后广播给客户端
+  const registerACUCallback = () => {
+    const topWindow = getTopWindow();
+    
+    // 检查神化再临API是否可用
+    if (!topWindow.AutoCardUpdaterAPI || !topWindow.AutoCardUpdaterAPI.registerTableUpdateCallback) {
+      // 神化再临插件未加载，延迟重试
+      const retryCount = (registerACUCallback as any).retryCount || 0;
+      if (retryCount < ACU_RETRY_MAX) {
+        (registerACUCallback as any).retryCount = retryCount + 1;
+        console.log(`[联机Mod] 等待神化再临插件加载... (${retryCount + 1}/${ACU_RETRY_MAX})`);
+        setTimeout(registerACUCallback, ACU_RETRY_INTERVAL);
+      } else {
+        console.log('[联机Mod] 神化再临插件未找到，跳过回调注册');
+      }
+      return;
+    }
+    
+    // 使用官方API注册回调
+    // 防抖变量
+    let acuSyncDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+    
+    const acuSyncCallback = (_tableData: any) => {
+      // 检查是否需要同步（房主且神化再临模式）
+      const store = useMultiplayerStore();
+      if (!store.isConnected || !store.isHost || store.variableMode !== 'apotheosis') {
+        return;
+      }
+      
+      if (acuSyncDebounceTimer) {
+        clearTimeout(acuSyncDebounceTimer);
+      }
+      
+      acuSyncDebounceTimer = setTimeout(() => {
+        acuSyncDebounceTimer = null;
+        console.log('[联机Mod] 神化再临表格更新，触发同步');
+        
+        try {
+          const acuData = getACUTableData();
+          if (acuData) {
+            console.log('[联机Mod] 读取到ACU数据:', {
+              isolationKey: acuData.isolationKey,
+              tableCount: Object.keys(acuData.tables).length,
+              modifiedKeys: acuData.modifiedKeys
+            });
+            
+            // 判断是全量还是增量同步
+            if (!store.acuSyncState.fullSynced) {
+              // 首次：全量同步
+              store.broadcastACUFullSync(acuData.isolationKey, acuData.tables, acuData.targetMessageId);
+              store.acuSyncState.fullSynced = true;  // 标记已完成全量同步
+              console.log('[联机Mod] 已发送ACU全量同步');
+            } else {
+              // 后续：增量同步（只发送修改的表格）
+              const modifiedTables: Record<string, any> = {};
+              for (const key of acuData.modifiedKeys) {
+                if (acuData.tables[key] !== undefined) {
+                  modifiedTables[key] = acuData.tables[key];
+                }
+              }
+              store.broadcastACUDeltaSync(acuData.isolationKey, modifiedTables, acuData.modifiedKeys, acuData.targetMessageId);
+              console.log('[联机Mod] 已发送ACU增量同步');
+            }
+          } else {
+            console.log('[联机Mod] 未能读取到ACU数据');
+          }
+        } catch (error) {
+          console.error('[联机Mod] 神化再临同步失败:', error);
+        }
+      }, ACU_DEBOUNCE_MS);
+    };
+    
+    // 注册回调
+    topWindow.AutoCardUpdaterAPI.registerTableUpdateCallback(acuSyncCallback);
+    console.log('[联机Mod] 已注册神化再临表格更新回调');
+  };
+  
+  // 从聊天记录读取神化再临表格数据
+  const getACUTableData = (): { isolationKey: string; tables: Record<string, any>; modifiedKeys: string[]; targetMessageId?: number } | null => {
+    const topWindow = getTopWindow();
+    
+    const context = topWindow.SillyTavern?.getContext?.();
+    const chat = context?.chat;
+    if (!chat || chat.length === 0) {
+      console.log('[联机Mod] getACUTableData: 无法获取chat数据');
+      return null;
+    }
+    
+    // 从后向前查找最新的神化再临数据
+    for (let i = chat.length - 1; i >= 0; i--) {
+      const msg = chat[i];
+      if (msg.is_user) continue;
+      
+      // 新版格式（按隔离标签分组）
+      if (msg.TavernDB_ACU_IsolatedData) {
+        const isolationKey = Object.keys(msg.TavernDB_ACU_IsolatedData)[0] || '';
+        const tagData = msg.TavernDB_ACU_IsolatedData[isolationKey];
+        if (tagData) {
+          return {
+            isolationKey,
+            tables: tagData.independentData || {},
+            modifiedKeys: tagData.modifiedKeys || [],
+            targetMessageId: msg.id,
+          };
+        }
+      }
+      
+      // 旧版格式（兼容）
+      if (msg.TavernDB_ACU_IndependentData) {
+        return {
+          isolationKey: msg.TavernDB_ACU_Identity || '',
+          tables: msg.TavernDB_ACU_IndependentData,
+          modifiedKeys: msg.TavernDB_ACU_ModifiedKeys || [],
+          targetMessageId: msg.id,
+        };
+      }
+    }
+    return null;
+  };
+  
+  // 延迟注册回调（等待神化再临插件加载）
+  setTimeout(registerACUCallback, ACU_INIT_DELAY);
+
+  // 非房主：收到神化再临全量同步
+  eventOn('multiplayer_acu_full_sync', async (data: { isolationKey: string; tables: Record<string, any>; targetMessageId?: number }) => {
+    const store = useMultiplayerStore();
+    if (store.isHost) return;
+    
+    try {
+      await applyACUData(data, true);
+      store.addLog('system', '系统', '[神化再临] 全量同步完成');
+    } catch (error) {
+      store.addLog('error', '系统', `[神化再临] 同步失败: ${error}`);
+      console.error('[联机Mod] 神化再临全量同步失败:', error);
+    }
+  });
+
+  // 非房主：收到神化再临增量同步
+  eventOn('multiplayer_acu_delta_sync', async (data: { isolationKey: string; tables: Record<string, any>; modifiedKeys: string[]; targetMessageId?: number }) => {
+    const store = useMultiplayerStore();
+    if (store.isHost) return;
+    
+    try {
+      await applyACUData(data, false);
+      store.addLog('system', '系统', '[神化再临] 增量同步完成');
+    } catch (error) {
+      store.addLog('error', '系统', `[神化再临] 同步失败: ${error}`);
+      console.error('[联机Mod] 神化再临增量同步失败:', error);
+    }
+  });
+
+  // 将接收到的神化再临数据写入本地消息
+  const applyACUData = async (data: { isolationKey: string; tables: Record<string, any>; modifiedKeys?: string[]; targetMessageId?: number }, isFullSync: boolean) => {
+    const topWindow = getTopWindow();
+    
+    // 使用神化再临的官方API导入数据
+    if (topWindow.AutoCardUpdaterAPI?.importTableAsJson) {
+      try {
+        // 构建神化再临期望的数据格式
+        const importData: Record<string, any> = {
+          mate: { type: 'chatSheets', version: 1 }
+        };
+        
+        // 复制所有表格数据
+        Object.keys(data.tables).forEach(key => {
+          if (key.startsWith('sheet_')) {
+            importData[key] = JSON.parse(JSON.stringify(data.tables[key]));
+          }
+        });
+        
+        console.log('[联机Mod] 使用 importTableAsJson 导入数据:', {
+          tableCount: Object.keys(importData).filter(k => k.startsWith('sheet_')).length,
+          isFullSync
+        });
+        
+        // 调用官方API导入
+        const success = await topWindow.AutoCardUpdaterAPI.importTableAsJson(JSON.stringify(importData));
+        
+        if (success) {
+          console.log('[联机Mod] 神化再临数据导入成功');
+        } else {
+          console.warn('[联机Mod] 神化再临数据导入失败');
+        }
+      } catch (e) {
+        console.error('[联机Mod] 调用 importTableAsJson 失败:', e);
+      }
+    } else {
+      // 回退方案：手动写入并刷新
+      console.log('[联机Mod] importTableAsJson 不可用，使用手动写入');
+      
+      const context = topWindow.SillyTavern?.getContext?.();
+      const chat = context?.chat;
+      if (!chat || chat.length === 0) {
+        console.log('[联机Mod] applyACUData: 无法获取chat数据');
+        return;
+      }
+      
+      // 找到目标AI消息（使用最后一条AI消息）
+      let targetIndex = -1;
+      for (let i = chat.length - 1; i >= 0; i--) {
+        if (!chat[i].is_user) {
+          targetIndex = i;
+          break;
+        }
+      }
+      
+      if (targetIndex === -1) {
+        console.warn('[联机Mod] 没有AI消息，无法写入神化再临数据');
+        return;
+      }
+      
+      const msg = chat[targetIndex];
+      
+      // 初始化数据结构
+      if (!msg.TavernDB_ACU_IsolatedData) {
+        msg.TavernDB_ACU_IsolatedData = {};
+      }
+      
+      if (!msg.TavernDB_ACU_IsolatedData[data.isolationKey]) {
+        msg.TavernDB_ACU_IsolatedData[data.isolationKey] = {
+          independentData: {},
+          modifiedKeys: [],
+          updateGroupKeys: []
+        };
+      }
+      
+      const tagData = msg.TavernDB_ACU_IsolatedData[data.isolationKey];
+      
+      if (isFullSync) {
+        // 全量同步：完全替换
+        tagData.independentData = data.tables;
+        tagData.modifiedKeys = Object.keys(data.tables);
+      } else {
+        // 增量同步：合并数据
+        Object.assign(tagData.independentData, data.tables);
+        // 更新modifiedKeys（合并）
+        if (data.modifiedKeys) {
+          data.modifiedKeys.forEach(key => {
+            if (!tagData.modifiedKeys.includes(key)) {
+              tagData.modifiedKeys.push(key);
+            }
+          });
+        }
+      }
+      
+      // 持久化到服务器：调用SillyTavern的saveChat
+      try {
+        const contextForSave = topWindow.SillyTavern?.getContext?.();
+        if (contextForSave?.saveChat) {
+          await contextForSave.saveChat();
+          console.log('[联机Mod] 神化再临数据已持久化');
+        }
+      } catch (e) {
+        console.warn('[联机Mod] 持久化神化再临数据失败:', e);
+      }
+      
+      // 触发神化再临刷新（如果可用）
+      if (topWindow.AutoCardUpdaterAPI?.refreshMergedDataAndNotify) {
+        try {
+          await topWindow.AutoCardUpdaterAPI.refreshMergedDataAndNotify();
+        } catch (e) {
+          console.warn('[联机Mod] 触发神化再临刷新失败:', e);
+        }
+      }
+    }
+  };
 }
 
 /** 初始化脚本 */

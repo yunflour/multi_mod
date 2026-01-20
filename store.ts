@@ -97,14 +97,21 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
   /** 房主ID */
   const hostId = ref<string | null>(null);
   
-  /** 变量模式（房主设置）: 'none' = 无变量, 'mvu' = MVU变量 */
+  /** 变量模式（房主设置）: 'none' = 无变量, 'mvu' = MVU变量, 'apotheosis' = 神化再临 */
   const VARIABLE_MODE_KEY = 'st_multiplayer_variable_mode';
-  const savedVariableMode = localStorage.getItem(VARIABLE_MODE_KEY) as 'none' | 'mvu' | null;
-  const variableMode = ref<'none' | 'mvu'>(savedVariableMode || 'none');
+  const savedVariableMode = localStorage.getItem(VARIABLE_MODE_KEY) as 'none' | 'mvu' | 'apotheosis' | null;
+  const variableMode = ref<'none' | 'mvu' | 'apotheosis'>(savedVariableMode || 'none');
   
   // 监听variableMode变化并保存到localStorage
   watch(variableMode, (newVal) => {
     localStorage.setItem(VARIABLE_MODE_KEY, newVal);
+  });
+  
+  /** 神化再临同步状态（每个WS连接独立） */
+  const acuSyncState = ref({
+    fullSynced: false,           // 是否已完成全量同步
+    lastSyncTimestamp: 0,        // 上次同步时间戳
+    isolationKey: '',            // 当前隔离标签
   });
   
   /** 是否是房主 */
@@ -231,6 +238,8 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     pendingInputs.value.clear();
     isWaitingForAi.value = false;
     hostId.value = null;
+    // 重置神化再临同步状态
+    acuSyncState.value = { fullSynced: false, lastSyncTimestamp: 0, isolationKey: '' };
     
     addLog('system', '系统', '已断开连接');
   }
@@ -482,7 +491,50 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     addLog('system', '系统', `[${variableType}] 变量已同步`);
   }
 
-  
+  /**
+   * 神化再临全量同步（房主用，首次同步时调用）
+   * @param isolationKey 隔离标签
+   * @param tables 完整表格数据
+   * @param targetMessageId 目标消息ID（可选）
+   */
+  function broadcastACUFullSync(isolationKey: string, tables: Record<string, any>, targetMessageId?: number) {
+    if (!networkManager || !isHost.value) return;
+    
+    networkManager.broadcast({
+      type: 'acu_full_sync',
+      data: { 
+        isolationKey,
+        tables,
+        targetMessageId,
+      },
+    });
+    
+    addLog('system', '系统', `[神化再临] 全量同步已发送 (${Object.keys(tables).length} 表)`);
+  }
+
+  /**
+   * 神化再临增量同步（房主用，后续更新时调用）
+   * @param isolationKey 隔离标签
+   * @param tables 变更的表格数据
+   * @param modifiedKeys 变更的表格键列表
+   * @param targetMessageId 目标消息ID（可选）
+   */
+  function broadcastACUDeltaSync(isolationKey: string, tables: Record<string, any>, modifiedKeys: string[], targetMessageId?: number) {
+    if (!networkManager || !isHost.value) return;
+    
+    networkManager.broadcast({
+      type: 'acu_delta_sync',
+      data: { 
+        isolationKey,
+        tables,
+        modifiedKeys,
+        targetMessageId,
+      },
+    });
+    
+    addLog('system', '系统', `[神化再临] 增量同步已发送 (${modifiedKeys.length} 表)`);
+  }
+
   // ============ 网络事件处理 ============
   
   function handleNetworkMessage(msg: NetworkMessage) {
@@ -618,6 +670,29 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
           addLog('system', '系统', `[${variableType}] 收到变量同步`);
           // 触发事件让index.ts处理，传递变量类型和内容
           eventEmit('multiplayer_sync_variables', { variableType, content });
+        }
+        break;
+        
+      case 'acu_full_sync':
+        // 非房主收到神化再临全量同步
+        if (!isHost.value) {
+          addLog('system', '系统', `[神化再临] 收到全量同步 (${Object.keys(msg.data.tables || {}).length} 表)`);
+          // 更新同步状态
+          acuSyncState.value.fullSynced = true;
+          acuSyncState.value.lastSyncTimestamp = Date.now();
+          acuSyncState.value.isolationKey = msg.data.isolationKey || '';
+          // 触发事件让index.ts处理
+          eventEmit('multiplayer_acu_full_sync', msg.data);
+        }
+        break;
+        
+      case 'acu_delta_sync':
+        // 非房主收到神化再临增量同步
+        if (!isHost.value) {
+          addLog('system', '系统', `[神化再临] 收到增量同步 (${(msg.data.modifiedKeys || []).length} 表)`);
+          acuSyncState.value.lastSyncTimestamp = Date.now();
+          // 触发事件让index.ts处理
+          eventEmit('multiplayer_acu_delta_sync', msg.data);
         }
         break;
         
@@ -846,6 +921,10 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     sendRegexToUser,
     broadcastVariables,
     variableMode,
+    // 神化再临同步
+    acuSyncState,
+    broadcastACUFullSync,
+    broadcastACUDeltaSync,
     
     // 在线模式方法
     fetchOnlineRooms,
