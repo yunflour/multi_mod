@@ -37,6 +37,115 @@ function deteleportStyle() {
   $(`head > div[script_id="${scriptId}"]`).remove();
 }
 
+/** 设置 ||spoiler|| 遮罩功能 */
+function setupSpoilerFeature() {
+  // 获取顶层窗口
+  const topWindow = window.top || window.parent || window;
+  const topDoc = topWindow.document;
+  
+  // 注入spoiler样式到主文档
+  const spoilerStyles = `
+    <style id="multiplayer-spoiler-styles">
+      .mp-spoiler {
+        background-color: #4a4a4a;
+        color: transparent;
+        cursor: pointer;
+        border-radius: 3px;
+        padding: 0 4px;
+        transition: all 0.2s ease;
+        user-select: none;
+      }
+      .mp-spoiler:hover {
+        background-color: #5a5a5a;
+      }
+      .mp-spoiler.revealed {
+        background-color: transparent;
+        color: inherit;
+        cursor: text;
+        user-select: auto;
+      }
+    </style>
+  `;
+  
+  // 只注入一次到主文档
+  if (!topDoc.getElementById('multiplayer-spoiler-styles')) {
+    topDoc.head.insertAdjacentHTML('beforeend', spoilerStyles);
+  }
+  
+  // 处理消息中的 ||spoiler|| 语法
+  const processSpoilers = (element: HTMLElement) => {
+    const walker = topDoc.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+    const textNodes: Text[] = [];
+    
+    while (walker.nextNode()) {
+      const node = walker.currentNode as Text;
+      if (node.textContent && node.textContent.includes('||')) {
+        textNodes.push(node);
+      }
+    }
+    
+    textNodes.forEach(textNode => {
+      const text = textNode.textContent || '';
+      const spoilerRegex = /\|\|(.+?)\|\|/g;
+      
+      if (spoilerRegex.test(text)) {
+        const fragment = topDoc.createDocumentFragment();
+        let lastIndex = 0;
+        let match;
+        
+        spoilerRegex.lastIndex = 0;
+        while ((match = spoilerRegex.exec(text)) !== null) {
+          // 添加匹配前的文本
+          if (match.index > lastIndex) {
+            fragment.appendChild(topDoc.createTextNode(text.slice(lastIndex, match.index)));
+          }
+          
+          // 创建spoiler元素
+          const spoiler = topDoc.createElement('span');
+          spoiler.className = 'mp-spoiler';
+          spoiler.textContent = match[1];
+          spoiler.addEventListener('click', function() {
+            this.classList.toggle('revealed');
+          });
+          fragment.appendChild(spoiler);
+          
+          lastIndex = match.index + match[0].length;
+        }
+        
+        // 添加剩余文本
+        if (lastIndex < text.length) {
+          fragment.appendChild(topDoc.createTextNode(text.slice(lastIndex)));
+        }
+        
+        textNode.parentNode?.replaceChild(fragment, textNode);
+      }
+    });
+  };
+  
+  // 监听消息渲染完成事件
+  const handleMessageRendered = (message_id: number) => {
+    // 延迟处理确保DOM已更新
+    setTimeout(() => {
+      const messageElement = topDoc.querySelector(`[mesid="${message_id}"] .mes_text`);
+      if (messageElement) {
+        processSpoilers(messageElement as HTMLElement);
+      }
+    }, 50);
+  };
+  
+  eventOn(tavern_events.USER_MESSAGE_RENDERED, handleMessageRendered);
+  eventOn(tavern_events.CHARACTER_MESSAGE_RENDERED, handleMessageRendered);
+  
+  // 处理已有消息
+  setTimeout(() => {
+    topDoc.querySelectorAll('.mes_text').forEach(el => {
+      processSpoilers(el as HTMLElement);
+    });
+  }, 1000);
+  
+  console.log('[联机Mod] Spoiler遮罩功能已启用');
+}
+
 /** 设置酒馆事件监听 */
 function setupTavernEventListeners() {
   const store = useMultiplayerStore();
@@ -104,6 +213,53 @@ function setupTavernEventListeners() {
         console.log('[联机MOD] variables:', variables);
       }
     }, 500);
+  });
+
+  // 房主：监听AI生成前事件，注入联机用户的设定（与原生persona同层）
+  eventOn(tavern_events.GENERATION_AFTER_COMMANDS, () => {
+    if (!store.isConnected || !store.isHost) return;
+    if (store.pendingPersonas.size === 0) return;
+    
+    try {
+      // 获取原生persona的深度信息
+      const preset = getPreset('in_use');
+      const personaPrompt = preset.prompts.find((p: { id: string }) => p.id === 'personaDescription');
+      
+      let targetDepth = 9999; // 默认使用大深度，确保在聊天开头
+      
+      if (personaPrompt?.position?.type === 'in_chat' && typeof personaPrompt.position.depth === 'number') {
+        targetDepth = personaPrompt.position.depth;
+        console.log('[联机Mod] personaDescription使用in_chat类型, depth:', targetDepth);
+      } else {
+        console.log('[联机Mod] personaDescription使用relative类型或未找到，使用默认大深度:', targetDepth);
+      }
+      
+      // 构建拼接后的用户设定
+      const allPersonas: string[] = [];
+      
+      for (const [, persona] of store.pendingPersonas) {
+        const formatted = `${persona.prefix} ${persona.content}`;
+        allPersonas.push(formatted);
+      }
+      
+      const combinedPersona = allPersonas.join('\n\n');
+      
+      // 注入为系统提示词
+      injectPrompts([{
+        id: 'multiplayer_combined_persona',
+        position: 'in_chat',
+        depth: targetDepth,
+        role: 'system',
+        content: `${combinedPersona}`
+      }], { once: true });
+      
+      console.log('[联机Mod] 已注入联机玩家设定, depth:', targetDepth, '玩家数:', store.pendingPersonas.size);
+      
+      // 清空已注入的用户设定（每次生成都需要重新发送）
+      store.pendingPersonas.clear();
+    } catch (e) {
+      console.error('[联机Mod] 注入用户设定失败:', e);
+    }
   });
 
   // 房主删除消息时广播给客户端
@@ -302,6 +458,107 @@ function setupTavernEventListeners() {
     }
   });
 
+  // 房主：收到变量同步请求
+  eventOn('multiplayer_sync_variables_request', async (data: { userId: string; variableMode: string }) => {
+    const store = useMultiplayerStore();
+    if (!store.isHost) return;
+    
+    const { userId, variableMode } = data;
+    
+    try {
+      if (variableMode === 'mvu') {
+        // 获取MVU变量
+        const lastId = getLastMessageId();
+        if (lastId < 0) {
+          store.addLog('error', '系统', '[MVU] 无法获取消息ID');
+          return;
+        }
+        
+        const vars = await getVariables({ type: 'message', message_id: lastId });
+        if (!vars || (!vars.stat_data && !vars.display_data && !vars.delta_data)) {
+          // 发送错误消息给客户端
+          store.sendVariablesToUser(userId, 'mvu', { error: '无MVU变量' });
+          return;
+        }
+        
+        // 发送变量给客户端
+        store.sendVariablesToUser(userId, 'mvu', {
+          stat_data: vars.stat_data,
+          display_data: vars.display_data,
+          delta_data: vars.delta_data,
+          schema: vars.schema,
+        });
+      } else if (variableMode === 'apotheosis') {
+        // 神化再临变量：直接读取并发送
+        const topWindow: any = window.top || window.parent || window;
+        const context = topWindow.SillyTavern?.getContext?.();
+        const chat = context?.chat;
+        
+        if (!chat || chat.length === 0) {
+          store.sendVariablesToUser(userId, 'apotheosis', { error: '无神化再临变量' });
+          return;
+        }
+        
+        // 采用与神化再临插件相同的合并策略：从所有消息中收集完整的表格数据
+        const mergedTables: Record<string, any> = {};
+        const foundSheets: Record<string, boolean> = {};
+        let isolationKey = '';
+        let targetMessageId: number | undefined;
+        
+        for (let i = chat.length - 1; i >= 0; i--) {
+          const msg = chat[i];
+          
+          // 新版格式：TavernDB_ACU_IsolatedData
+          if (msg.TavernDB_ACU_IsolatedData) {
+            const firstKey = Object.keys(msg.TavernDB_ACU_IsolatedData)[0] || '';
+            if (!isolationKey) isolationKey = firstKey;
+            
+            const tagData = msg.TavernDB_ACU_IsolatedData[firstKey];
+            if (tagData && tagData.independentData) {
+              Object.keys(tagData.independentData).forEach((sheetKey: string) => {
+                if (!foundSheets[sheetKey]) {
+                  mergedTables[sheetKey] = JSON.parse(JSON.stringify(tagData.independentData[sheetKey]));
+                  foundSheets[sheetKey] = true;
+                  if (!targetMessageId) targetMessageId = msg.id;
+                }
+              });
+            }
+          }
+          
+          // 旧版格式：TavernDB_ACU_IndependentData
+          if (msg.TavernDB_ACU_IndependentData) {
+            if (!isolationKey && msg.TavernDB_ACU_Identity) {
+              isolationKey = msg.TavernDB_ACU_Identity;
+            }
+            
+            Object.keys(msg.TavernDB_ACU_IndependentData).forEach((sheetKey: string) => {
+              if (!foundSheets[sheetKey]) {
+                mergedTables[sheetKey] = JSON.parse(JSON.stringify(msg.TavernDB_ACU_IndependentData[sheetKey]));
+                foundSheets[sheetKey] = true;
+                if (!targetMessageId) targetMessageId = msg.id;
+              }
+            });
+          }
+        }
+        
+        if (Object.keys(mergedTables).length === 0) {
+          store.sendVariablesToUser(userId, 'apotheosis', { error: '无神化再临变量' });
+          return;
+        }
+        
+        // 发送神化再临全量同步
+        store.broadcastACUFullSync(isolationKey, mergedTables, targetMessageId);
+        store.addLog('system', '系统', `[神化再临] 已发送全量同步 (${Object.keys(mergedTables).length} 表)`);
+      } else {
+        store.addLog('error', '系统', `未知变量模式: ${variableMode}`);
+        store.sendVariablesToUser(userId, 'unknown', { error: `未知变量模式: ${variableMode}` });
+      }
+    } catch (error) {
+      store.addLog('error', '系统', `变量同步失败: ${error}`);
+      console.error('变量同步失败:', error);
+    }
+  });
+
   // 非房主：监听变量同步事件
   eventOn('multiplayer_sync_variables', async (data: { variableType: string; content: any }) => {
     const store = useMultiplayerStore();
@@ -310,6 +567,12 @@ function setupTavernEventListeners() {
     const { variableType, content } = data;
     
     try {
+      // 检查是否是错误消息
+      if (content.error) {
+        store.addLog('system', '系统', `[${variableType}] ${content.error}`);
+        return;
+      }
+      
       // 根据变量类型处理（可复用架构）
       switch (variableType) {
         case 'mvu':
@@ -445,7 +708,6 @@ function setupTavernEventListeners() {
     // 从后向前查找最新的神化再临数据
     for (let i = chat.length - 1; i >= 0; i--) {
       const msg = chat[i];
-      if (msg.is_user) continue;
       
       // 新版格式（按隔离标签分组）
       if (msg.TavernDB_ACU_IsolatedData) {
@@ -636,6 +898,9 @@ $(() => {
   
   // 设置酒馆事件监听
   setupTavernEventListeners();
+  
+  // 设置Spoiler遮罩功能
+  setupSpoilerFeature();
   
   // 提示加载成功
   toastr.success('联机mod已加载！配置悬浮窗开始使用。', '联机');

@@ -198,11 +198,18 @@
               @click="handleSyncHistory"
               title="同步房主的历史消息"
             >📥 同步历史</button>
+          </div>
+          <div class="sync-buttons-row">
             <button 
               class="sync-history-btn"
               @click="handleSyncRegex"
               title="同步房主的局部正则"
             >📋 同步正则</button>
+            <button 
+              class="sync-history-btn"
+              @click="handleSyncVariables"
+              title="同步房主的变量数据"
+            >📊 同步变量</button>
           </div>
           <textarea 
             v-model="userInput"
@@ -378,6 +385,42 @@
             </label>
             <small class="hint">开启后房主看不到用户输入的具体内容</small>
           </div>
+          <div class="setting-item" v-if="store.isHost">
+            <label>限时输入 (秒):</label>
+            <input 
+              type="number"
+              v-model.number="settings.timedInputSeconds"
+              min="0"
+              max="300"
+              class="settings-input"
+              @change="saveSettings"
+              style="width: 80px;"
+            />
+            <small class="hint">有人提交后N秒自动发送，0为关闭</small>
+          </div>
+          <div class="setting-item toggle-item">
+            <label class="toggle-label">
+              <span>发送用户设定:</span>
+              <input 
+                type="checkbox"
+                v-model="settings.sendUserPersona"
+                @change="saveSettings"
+                class="toggle-checkbox"
+              />
+              <span class="toggle-switch"></span>
+            </label>
+            <small class="hint">开启后提交输入时会将酒馆用户设定同步给房主</small>
+          </div>
+          <div class="setting-item" v-if="settings.sendUserPersona">
+            <label>设定前缀:</label>
+            <input 
+              v-model="settings.personaPrefix" 
+              placeholder="例如: [{name}]的设定:"
+              class="settings-input"
+              @change="saveSettings"
+            />
+            <small class="hint">使用 {name} 表示用户名</small>
+          </div>
           <div class="preview-box">
             <span class="preview-label">预览:</span>
             <span class="preview-text">{{ formatPreview }}</span>
@@ -479,6 +522,9 @@ interface Settings {
   messagePrefix: string;
   messageSuffix: string;
   hideUserInputContent: boolean;  // 房主是否隐藏用户输入内容
+  sendUserPersona: boolean;       // 是否发送用户设定
+  personaPrefix: string;          // 用户设定前缀
+  timedInputSeconds: number;      // 限时输入秒数（0为关闭）
 }
 
 const defaultSettings: Settings = {
@@ -486,6 +532,9 @@ const defaultSettings: Settings = {
   messagePrefix: '[{name}]:',
   messageSuffix: '',
   hideUserInputContent: false,
+  sendUserPersona: false,
+  personaPrefix: '[{name}]的设定:',
+  timedInputSeconds: 0,
 };
 
 // 从localStorage加载设置
@@ -518,6 +567,61 @@ onMounted(() => {
     localUserName.value = settings.defaultUserName;
   }
 });
+
+// ============ 限时输入定时器 ============
+
+let timedInputTimer: ReturnType<typeof setTimeout> | null = null;
+const timedInputCountdown = ref(0);  // 倒计时显示
+
+// 监听pendingInputs变化，启动限时输入定时器
+watch(
+  () => store.pendingInputs.size,
+  (newSize, oldSize) => {
+    // 只有房主且开启了限时输入才处理
+    if (!store.isHost || settings.timedInputSeconds <= 0) return;
+    
+    // 有新用户提交时（从0变成>0或数量增加）
+    if (newSize > 0 && (oldSize === 0 || newSize > oldSize)) {
+      // 取消之前的定时器
+      if (timedInputTimer) {
+        clearTimeout(timedInputTimer);
+        clearInterval(timedInputTimer);
+      }
+      
+      // 开始倒计时
+      timedInputCountdown.value = settings.timedInputSeconds;
+      
+      // 每秒更新倒计时显示
+      const countdownInterval = setInterval(() => {
+        timedInputCountdown.value--;
+        if (timedInputCountdown.value <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+      
+      // 设置主定时器
+      timedInputTimer = setTimeout(() => {
+        clearInterval(countdownInterval);
+        timedInputCountdown.value = 0;
+        
+        // 自动发送
+        if (store.isHost && store.pendingInputs.size > 0) {
+          store.addLog('system', '系统', '[限时输入] 时间到，自动发送');
+          sendCombinedToTavern();
+        }
+      }, settings.timedInputSeconds * 1000);
+      
+      store.addLog('system', '系统', `[限时输入] ${settings.timedInputSeconds}秒后自动发送`);
+    }
+    
+    // pendingInputs被清空时取消定时器
+    if (newSize === 0 && timedInputTimer) {
+      clearTimeout(timedInputTimer);
+      timedInputTimer = null;
+      timedInputCountdown.value = 0;
+    }
+  }
+);
 
 function toggleSettings() {
   showSettings.value = !showSettings.value;
@@ -710,6 +814,15 @@ function submitInput() {
   const userName = settings.defaultUserName || store.userName || '用户';
   const processedPrefix = settings.messagePrefix.replace('{name}', userName);
   
+  // 如果开启了发送用户设定，先获取并发送用户设定
+  if (settings.sendUserPersona) {
+    const persona = getPersonaDescription();
+    if (persona) {
+      const personaPrefixProcessed = settings.personaPrefix.replace('{name}', userName);
+      store.sendUserPersona(persona, personaPrefixProcessed);
+    }
+  }
+  
   store.sendUserInput(
     userInput.value.trim(),
     processedPrefix,
@@ -717,6 +830,31 @@ function submitInput() {
   );
   hasSubmitted.value = true;
   store.addLog('system', '我', `输入已提交`);
+}
+
+/** 获取酒馆原生用户设定 */
+function getPersonaDescription(): string {
+  try {
+    // 尝试从顶层窗口获取
+    const topWindow = window.top || window.parent || window;
+    
+    // 方案：从powerUserSettings获取
+    const context = (topWindow as any).SillyTavern?.getContext?.();
+    if (context?.powerUserSettings?.persona_description) {
+      return context.powerUserSettings.persona_description;
+    }
+    
+    // 回退：从DOM获取
+    const textarea = topWindow.document.querySelector('#persona_description') as HTMLTextAreaElement;
+    if (textarea?.value) {
+      return textarea.value;
+    }
+    
+    return '';
+  } catch (e) {
+    console.warn('[联机Mod] 获取用户设定失败:', e);
+    return '';
+  }
 }
 
 /** 房主提交自己的输入（加入收集） */
@@ -751,6 +889,11 @@ function handleSyncRegex() {
   if (confirm('确定要同步房主的正则吗？这将替换你当前的局部正则。')) {
     store.requestSyncRegex();
   }
+}
+
+/** 客户端请求同步变量 */
+function handleSyncVariables() {
+  store.requestSyncVariables();
 }
 
 /** 房主重置输入状态 */

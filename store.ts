@@ -88,6 +88,13 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     messageSuffix?: string;
   }>>(new Map());
   
+  /** 待注入的用户设定（房主用） */
+  const pendingPersonas = ref<Map<string, {
+    userName: string;
+    content: string;
+    prefix: string;
+  }>>(new Map());
+  
   /** 是否正在等待AI回复 */
   const isWaitingForAi = ref(false);
   
@@ -271,6 +278,21 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     });
     
     addLog('system', '我', `已发送输入: ${input.substring(0, 50)}...`);
+  }
+  
+  /** 发送用户设定给房主（客户端用） */
+  function sendUserPersona(content: string, prefix: string) {
+    if (!networkManager || !isConnected.value) return;
+    
+    networkManager.send({
+      type: 'user_persona',
+      data: { 
+        content,
+        prefix,
+      },
+    });
+    
+    addLog('system', '我', `已发送用户设定`);
   }
   
   /** 标记自己已准备 */
@@ -472,6 +494,23 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     addLog('system', '系统', `已发送${regexes.length}条正则`);
   }
 
+  /** 客户端请求同步变量（客户端用） */
+  function requestSyncVariables() {
+    if (!networkManager || isHost.value) {
+      addLog('error', '系统', '只有客户端可以请求同步变量');
+      return;
+    }
+    
+    networkManager.send({
+      type: 'sync_variables_request',
+      data: { 
+        variableMode: variableMode.value,  // 发送当前客户端的变量模式
+      },
+    });
+    
+    addLog('system', '系统', '正在请求同步变量...');
+  }
+
   /** 
    * 通用变量广播方法（房主用）
    * @param variableType 变量类型标识，如 'mvu', 'custom' 等
@@ -489,6 +528,31 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     });
     
     addLog('system', '系统', `[${variableType}] 变量已同步`);
+  }
+
+  /**
+   * 发送变量给指定用户（房主用）
+   * @param targetUserId 目标用户ID
+   * @param variableType 变量类型标识
+   * @param content 变量内容
+   */
+  function sendVariablesToUser(targetUserId: string, variableType: string, content: any) {
+    if (!networkManager || !isHost.value) return;
+    
+    networkManager.send({
+      type: 'sync_variables',
+      data: { 
+        variableType,
+        content,
+        targetUserId,
+      },
+    });
+    
+    if (content.error) {
+      addLog('system', '系统', `[${variableType}] ${content.error}`);
+    } else {
+      addLog('system', '系统', `[${variableType}] 变量已发送给用户`);
+    }
   }
 
   /**
@@ -673,6 +737,18 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
         }
         break;
         
+      case 'sync_variables_request':
+        // 房主收到变量同步请求
+        if (isHost.value) {
+          addLog('system', msg.fromName, `请求同步变量 (模式: ${msg.data.variableMode})`);
+          // 触发事件让index.ts处理
+          eventEmit('multiplayer_sync_variables_request', { 
+            userId: msg.from, 
+            variableMode: msg.data.variableMode 
+          });
+        }
+        break;
+        
       case 'acu_full_sync':
         // 非房主收到神化再临全量同步
         if (!isHost.value) {
@@ -693,6 +769,18 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
           acuSyncState.value.lastSyncTimestamp = Date.now();
           // 触发事件让index.ts处理
           eventEmit('multiplayer_acu_delta_sync', msg.data);
+        }
+        break;
+        
+      case 'user_persona':
+        // 房主收到用户设定
+        if (isHost.value) {
+          pendingPersonas.value.set(msg.from, {
+            userName: msg.fromName,
+            content: msg.data.content,
+            prefix: msg.data.prefix || `[${msg.fromName}]的设定:`,
+          });
+          addLog('system', msg.fromName, '已提交用户设定');
         }
         break;
         
@@ -884,6 +972,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     users,
     chatLogs,
     pendingInputs,
+    pendingPersonas,
     isWaitingForAi,
     isWaitingInput,
     hostId,
@@ -911,6 +1000,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     transferHost,
     getCombinedInputs,
     clearPendingInputs,
+    sendUserPersona,
     requestInput,
     resetInputState,
     requestSyncHistory,
@@ -918,8 +1008,10 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     broadcastUserMessage,
     broadcastDeleteLastMessage,
     requestSyncRegex,
+    requestSyncVariables,
     sendRegexToUser,
     broadcastVariables,
+    sendVariablesToUser,
     variableMode,
     // 神化再临同步
     acuSyncState,

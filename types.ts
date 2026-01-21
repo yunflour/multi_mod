@@ -23,8 +23,10 @@ export type MessageType =
   | 'sync_regex_request'    // 请求同步正则
   | 'sync_regex_data'       // 正则数据
   | 'sync_variables'        // 变量数据同步（通用，如MVU）
+  | 'sync_variables_request' // 请求同步变量
   | 'acu_full_sync'         // 神化再临全量同步
   | 'acu_delta_sync'        // 神化再临增量同步
+  | 'user_persona'          // 用户设定同步
   | 'ping'                  // 心跳请求
   | 'pong'                  // 心跳响应
   | 'error';                // 错误消息
