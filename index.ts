@@ -505,15 +505,32 @@ function setupTavernEventListeners() {
         let isolationKey = '';
         let targetMessageId: number | undefined;
         
+        // 先确定当前的隔离标签（从最新消息开始找）
+        for (let i = chat.length - 1; i >= 0; i--) {
+          const msg = chat[i];
+          if (msg.TavernDB_ACU_IsolatedData) {
+            const keys = Object.keys(msg.TavernDB_ACU_IsolatedData);
+            if (keys.length > 0) {
+              isolationKey = keys[0];
+              break;
+            }
+          }
+          if (msg.TavernDB_ACU_Identity !== undefined) {
+            isolationKey = msg.TavernDB_ACU_Identity || '';
+            break;
+          }
+        }
+        
+        console.log('[联机Mod] 同步变量使用隔离标签:', isolationKey || '(无标签)');
+        
+        // 从所有消息中收集表格数据
         for (let i = chat.length - 1; i >= 0; i--) {
           const msg = chat[i];
           
           // 新版格式：TavernDB_ACU_IsolatedData
           if (msg.TavernDB_ACU_IsolatedData) {
-            const firstKey = Object.keys(msg.TavernDB_ACU_IsolatedData)[0] || '';
-            if (!isolationKey) isolationKey = firstKey;
-            
-            const tagData = msg.TavernDB_ACU_IsolatedData[firstKey];
+            // 获取匹配当前隔离标签的数据
+            const tagData = msg.TavernDB_ACU_IsolatedData[isolationKey];
             if (tagData && tagData.independentData) {
               Object.keys(tagData.independentData).forEach((sheetKey: string) => {
                 if (!foundSheets[sheetKey]) {
@@ -525,21 +542,23 @@ function setupTavernEventListeners() {
             }
           }
           
-          // 旧版格式：TavernDB_ACU_IndependentData
+          // 旧版格式：TavernDB_ACU_IndependentData（严格匹配隔离标签）
           if (msg.TavernDB_ACU_IndependentData) {
-            if (!isolationKey && msg.TavernDB_ACU_Identity) {
-              isolationKey = msg.TavernDB_ACU_Identity;
+            const msgIdentity = msg.TavernDB_ACU_Identity || '';
+            // 匹配隔离标签
+            if (msgIdentity === isolationKey) {
+              Object.keys(msg.TavernDB_ACU_IndependentData).forEach((sheetKey: string) => {
+                if (!foundSheets[sheetKey]) {
+                  mergedTables[sheetKey] = JSON.parse(JSON.stringify(msg.TavernDB_ACU_IndependentData[sheetKey]));
+                  foundSheets[sheetKey] = true;
+                  if (!targetMessageId) targetMessageId = msg.id;
+                }
+              });
             }
-            
-            Object.keys(msg.TavernDB_ACU_IndependentData).forEach((sheetKey: string) => {
-              if (!foundSheets[sheetKey]) {
-                mergedTables[sheetKey] = JSON.parse(JSON.stringify(msg.TavernDB_ACU_IndependentData[sheetKey]));
-                foundSheets[sheetKey] = true;
-                if (!targetMessageId) targetMessageId = msg.id;
-              }
-            });
           }
         }
+        
+        console.log('[联机Mod] 合并后表格数量:', Object.keys(mergedTables).length, '表名:', Object.keys(mergedTables));
         
         if (Object.keys(mergedTables).length === 0) {
           store.sendVariablesToUser(userId, 'apotheosis', { error: '无神化再临变量' });
@@ -694,7 +713,7 @@ function setupTavernEventListeners() {
     console.log('[联机Mod] 已注册神化再临表格更新回调');
   };
   
-  // 从聊天记录读取神化再临表格数据
+  // 从聊天记录读取神化再临表格数据（采用完整合并策略）
   const getACUTableData = (): { isolationKey: string; tables: Record<string, any>; modifiedKeys: string[]; targetMessageId?: number } | null => {
     const topWindow = getTopWindow();
     
@@ -705,35 +724,80 @@ function setupTavernEventListeners() {
       return null;
     }
     
-    // 从后向前查找最新的神化再临数据
+    // 采用与神化再临插件相同的合并策略：从所有消息中收集完整的表格数据
+    const mergedTables: Record<string, any> = {};
+    const foundSheets: Record<string, boolean> = {};
+    let isolationKey = '';
+    let targetMessageId: number | undefined;
+    let modifiedKeys: string[] = [];
+    
+    // 先确定当前的隔离标签（从最新消息开始找）
+    for (let i = chat.length - 1; i >= 0; i--) {
+      const msg = chat[i];
+      if (msg.TavernDB_ACU_IsolatedData) {
+        const keys = Object.keys(msg.TavernDB_ACU_IsolatedData);
+        if (keys.length > 0) {
+          isolationKey = keys[0];
+          // 获取最新消息的modifiedKeys
+          const tagData = msg.TavernDB_ACU_IsolatedData[isolationKey];
+          if (tagData && tagData.modifiedKeys) {
+            modifiedKeys = tagData.modifiedKeys;
+          }
+          break;
+        }
+      }
+      if (msg.TavernDB_ACU_Identity !== undefined) {
+        isolationKey = msg.TavernDB_ACU_Identity || '';
+        if (msg.TavernDB_ACU_ModifiedKeys) {
+          modifiedKeys = msg.TavernDB_ACU_ModifiedKeys;
+        }
+        break;
+      }
+    }
+    
+    // 从所有消息中收集表格数据
     for (let i = chat.length - 1; i >= 0; i--) {
       const msg = chat[i];
       
-      // 新版格式（按隔离标签分组）
+      // 新版格式：TavernDB_ACU_IsolatedData
       if (msg.TavernDB_ACU_IsolatedData) {
-        const isolationKey = Object.keys(msg.TavernDB_ACU_IsolatedData)[0] || '';
         const tagData = msg.TavernDB_ACU_IsolatedData[isolationKey];
-        if (tagData) {
-          return {
-            isolationKey,
-            tables: tagData.independentData || {},
-            modifiedKeys: tagData.modifiedKeys || [],
-            targetMessageId: msg.id,
-          };
+        if (tagData && tagData.independentData) {
+          Object.keys(tagData.independentData).forEach((sheetKey: string) => {
+            if (!foundSheets[sheetKey]) {
+              mergedTables[sheetKey] = JSON.parse(JSON.stringify(tagData.independentData[sheetKey]));
+              foundSheets[sheetKey] = true;
+              if (!targetMessageId) targetMessageId = msg.id;
+            }
+          });
         }
       }
       
-      // 旧版格式（兼容）
+      // 旧版格式：TavernDB_ACU_IndependentData（严格匹配隔离标签）
       if (msg.TavernDB_ACU_IndependentData) {
-        return {
-          isolationKey: msg.TavernDB_ACU_Identity || '',
-          tables: msg.TavernDB_ACU_IndependentData,
-          modifiedKeys: msg.TavernDB_ACU_ModifiedKeys || [],
-          targetMessageId: msg.id,
-        };
+        const msgIdentity = msg.TavernDB_ACU_Identity || '';
+        if (msgIdentity === isolationKey) {
+          Object.keys(msg.TavernDB_ACU_IndependentData).forEach((sheetKey: string) => {
+            if (!foundSheets[sheetKey]) {
+              mergedTables[sheetKey] = JSON.parse(JSON.stringify(msg.TavernDB_ACU_IndependentData[sheetKey]));
+              foundSheets[sheetKey] = true;
+              if (!targetMessageId) targetMessageId = msg.id;
+            }
+          });
+        }
       }
     }
-    return null;
+    
+    if (Object.keys(mergedTables).length === 0) {
+      return null;
+    }
+    
+    return {
+      isolationKey,
+      tables: mergedTables,
+      modifiedKeys,
+      targetMessageId,
+    };
   };
   
   // 延迟注册回调（等待神化再临插件加载）

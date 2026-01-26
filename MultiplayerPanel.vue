@@ -8,7 +8,7 @@
     <!-- 标题栏 -->
     <div class="panel-header" @mousedown="startDrag" @touchstart="startTouchDrag">
       <div class="header-left">
-        <span class="title">🎮 联机工具 v0.4</span>
+        <span class="title">🎮 联机工具 v0.5</span>
         <span class="status-dot" :class="statusClass"></span>
       </div>
       <div class="header-actions">
