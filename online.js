@@ -71,7 +71,7 @@ class Room {
     // 检查用户超时
     checkUserTimeout() {
         const now = Date.now();
-        const timeout = 10000;
+        const timeout = 60000;
         const toRemove = [];
         
         // 先收集需要移除的用户

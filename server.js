@@ -25,7 +25,7 @@ const users = new Map();
 let hostId = null;
 
 // 用户不活跃超时时间（毫秒）
-const USER_TIMEOUT = 10000;
+const USER_TIMEOUT = 60000;
 
 // 创建WebSocket服务器
 const wss = new WebSocket.Server({ port: PORT });

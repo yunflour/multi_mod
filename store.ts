@@ -121,6 +121,11 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     isolationKey: '',            // 当前隔离标签
   });
   
+  /** 当前用户ID */
+  const currentUserId = computed(() => {
+    return networkManager?.userId || '';
+  });
+  
   /** 是否是房主 */
   const isHost = computed(() => {
     if (!networkManager) return false;
@@ -421,7 +426,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
   }
   
   /** 客户端请求同步历史消息 */
-  function requestSyncHistory() {
+  function requestSyncHistory(depth?: number) {
     if (!networkManager || isHost.value) {
       addLog('error', '系统', '只有客户端可以请求同步历史');
       return;
@@ -429,7 +434,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     
     networkManager.send({
       type: 'sync_history_request',
-      data: {},
+      data: { depth: depth || 0 },  // 0表示全部
     });
     
     addLog('system', '系统', '正在请求同步历史消息...');
@@ -608,16 +613,16 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
         break;
         
       case 'user_input':
-        // 房主收到用户输入
-        if (isHost.value) {
-          pendingInputs.value.set(msg.from, {
-            userName: msg.fromName,
-            content: msg.data.content,
-            messagePrefix: msg.data.messagePrefix || '[{name}]:',
-            messageSuffix: msg.data.messageSuffix || '',
-          });
-          addLog('system', msg.fromName, `提交了输入`);
-        }
+        // 所有用户都存储输入（实现输入同步显示）
+        // 如果发送者是房主，使用 'host' 作为 key；否则使用实际的 userId
+        const inputKey = (msg.from === hostId.value) ? 'host' : msg.from;
+        pendingInputs.value.set(inputKey, {
+          userName: msg.fromName,
+          content: msg.data.content,
+          messagePrefix: msg.data.messagePrefix || '[{name}]:',
+          messageSuffix: msg.data.messageSuffix || '',
+        });
+        addLog('system', msg.fromName, `提交了输入`);
         break;
         
       case 'ready':
@@ -688,6 +693,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
         // 非房主收到重置请求
         if (!isHost.value) {
           isWaitingInput.value = false;
+          pendingInputs.value.clear();  // 清空输入列表
           addLog('system', '系统', '输入已被重置');
           eventEmit('multiplayer_reset_input');
         }
@@ -697,8 +703,11 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
         // 房主收到历史同步请求
         if (isHost.value) {
           addLog('system', msg.fromName, '请求同步历史消息');
-          // 触发事件让index.ts处理（因为需要调用getChatMessages）
-          eventEmit('multiplayer_sync_history_request', msg.from);
+          // 触发事件让index.ts处理（传递完整数据）
+          eventEmit('multiplayer_sync_history_request', {
+            userId: msg.from,
+            depth: msg.data?.depth || 0,
+          });
         }
         break;
         
@@ -979,6 +988,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     isHost,
     allUsersSubmitted,
     isConnectionStable,
+    currentUserId,
     
     // 在线模式状态
     onlineMode,

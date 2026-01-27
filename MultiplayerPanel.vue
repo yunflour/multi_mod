@@ -12,6 +12,12 @@
         <span class="status-dot" :class="statusClass"></span>
       </div>
       <div class="header-actions">
+        <button 
+          v-if="store.mode !== 'disconnected'" 
+          class="icon-btn danger-icon" 
+          @click.stop="handleDisconnect" 
+          title="断开连接"
+        >🔌</button>
         <button class="icon-btn" @click.stop="toggleSettings" title="设置">⚙</button>
         <button class="icon-btn" @click.stop="toggleMinimize" :title="isMinimized ? '展开' : '最小化'">
           {{ isMinimized ? '▢' : '—' }}
@@ -189,45 +195,8 @@
           </div>
         </div>
 
-        <!-- 输入提交区（非房主用） -->
-        <div v-if="!store.isHost" class="input-submit-area">
-          <div class="section-title">
-            提交输入给房主
-            <button 
-              class="sync-history-btn"
-              @click="handleSyncHistory"
-              title="同步房主的历史消息"
-            >📥 同步历史</button>
-          </div>
-          <div class="sync-buttons-row">
-            <button 
-              class="sync-history-btn"
-              @click="handleSyncRegex"
-              title="同步房主的局部正则"
-            >📋 同步正则</button>
-            <button 
-              class="sync-history-btn"
-              @click="handleSyncVariables"
-              title="同步房主的变量数据"
-            >📊 同步变量</button>
-          </div>
-          <textarea 
-            v-model="userInput"
-            placeholder="输入你的回复内容，点击提交发送给房主..."
-            class="input-textarea"
-            rows="3"
-          ></textarea>
-          <button 
-            class="action-btn primary" 
-            @click="submitInput"
-            :disabled="!userInput.trim() || hasSubmitted"
-          >
-            {{ hasSubmitted ? '已提交 ✓' : '提交输入' }}
-          </button>
-        </div>
-
-        <!-- 房主控制区 -->
-        <div v-if="store.isHost" class="host-control-area">
+        <!-- 收集到的输入（所有用户都可见） -->
+        <div class="inputs-display-area">
           <div class="section-title">
             收集到的输入 ({{ store.pendingInputs.size }}/{{ totalUserCount }})
             <span v-if="store.allUsersSubmitted && totalUserCount > 0" class="all-submitted">✓ 全部提交</span>
@@ -245,20 +214,43 @@
             </div>
           </div>
           <div v-else class="empty-inputs">
-            {{ store.isWaitingInput ? '等待用户提交输入...' : '点击"请求输入"开始收集' }}
+            暂无输入
           </div>
-          
-          <div class="host-input-area">
-            <textarea 
-              v-model="hostInput"
-              placeholder="房主输入（可选，会与其他输入合并）..."
-              class="input-textarea"
-              rows="2"
-            ></textarea>
+        </div>
+
+        <!-- 输入提交区（所有用户共用） -->
+        <div class="input-submit-area">
+          <div class="section-title">
+            提交输入
+            <template v-if="!store.isHost">
+              <button 
+                class="sync-history-btn"
+                @click="handleSyncHistory"
+                title="同步房主的历史消息"
+              >📥 同步历史</button>
+            </template>
           </div>
-          
+          <div v-if="!store.isHost" class="sync-buttons-row">
+            <button 
+              class="sync-history-btn"
+              @click="handleSyncRegex"
+              title="同步房主的局部正则"
+            >📋 同步正则</button>
+            <button 
+              class="sync-history-btn"
+              @click="handleSyncVariables"
+              title="同步房主的变量数据"
+            >📊 同步变量</button>
+          </div>
+          <textarea 
+            v-model="currentUserInput"
+            :placeholder="store.isHost ? '房主输入（可选，会与其他输入合并）...' : '输入你的回复内容，点击提交发送...'"
+            class="input-textarea"
+            rows="3"
+          ></textarea>
           <div class="button-group">
             <button 
+              v-if="store.isHost"
               class="action-btn secondary" 
               @click="handleResetInput"
               :disabled="store.pendingInputs.size === 0"
@@ -267,12 +259,13 @@
             </button>
             <button 
               class="action-btn primary" 
-              @click="handleRequestInput"
-              :disabled="!hostInput.trim() || hasHostSubmitted"
+              @click="handleSubmitInput"
+              :disabled="!currentUserInput.trim() || currentUserHasSubmitted"
             >
-              {{ hasHostSubmitted ? '已提交 ✓' : '提交输入' }}
+              {{ currentUserHasSubmitted ? '已提交 ✓' : '提交输入' }}
             </button>
             <button 
+              v-if="store.isHost"
               class="action-btn primary" 
               @click="sendCombinedToTavern"
               :disabled="store.pendingInputs.size === 0"
@@ -295,12 +288,7 @@
           </button>
         </div>
 
-        <!-- 底部操作栏 -->
-        <div class="action-bar">
-          <button class="action-btn danger" @click="handleDisconnect">
-            断开连接
-          </button>
-        </div>
+
       </template>
     </div>
 
@@ -398,6 +386,19 @@
             />
             <small class="hint">有人提交后N秒自动发送，0为关闭</small>
           </div>
+          <div class="setting-item">
+            <label>同步历史消息层数:</label>
+            <input 
+              type="number"
+              v-model.number="settings.syncHistoryDepth"
+              min="0"
+              max="1000"
+              class="settings-input"
+              @change="saveSettings"
+              style="width: 80px;"
+            />
+            <small class="hint">限制同步的历史消息数量，0为全部</small>
+          </div>
           <div class="setting-item toggle-item">
             <label class="toggle-label">
               <span>发送用户设定:</span>
@@ -450,10 +451,8 @@ const dragOffset = reactive({ x: 0, y: 0 });
 
 const localUserName = ref('');
 const chatMessage = ref('');
-const userInput = ref('');      // 非房主的输入
-const hostInput = ref('');      // 房主的输入
-const hasSubmitted = ref(false); // 非房主是否已提交
-const showSettings = ref(false); // 是否显示设置面板
+const currentUserInput = ref('');  // 统一的输入框（房主和非房主共用）
+const showSettings = ref(false);   // 是否显示设置面板
 
 // ============ 在线模式相关 ============
 
@@ -525,6 +524,7 @@ interface Settings {
   sendUserPersona: boolean;       // 是否发送用户设定
   personaPrefix: string;          // 用户设定前缀
   timedInputSeconds: number;      // 限时输入秒数（0为关闭）
+  syncHistoryDepth: number;       // 同步历史消息层数（0=全部）
 }
 
 const defaultSettings: Settings = {
@@ -535,6 +535,7 @@ const defaultSettings: Settings = {
   sendUserPersona: false,
   personaPrefix: '[{name}]的设定:',
   timedInputSeconds: 0,
+  syncHistoryDepth: 10,
 };
 
 // 从localStorage加载设置
@@ -650,9 +651,18 @@ const totalUserCount = computed(() => {
   return store.users.length;
 });
 
-/** 房主是否已提交 */
-const hasHostSubmitted = computed(() => {
-  return store.pendingInputs.has('host');
+/** 当前用户是否已提交 */
+const currentUserHasSubmitted = computed(() => {
+  if (!store.isConnected) return false;
+  if (!store.currentUserId) return false;
+  
+  // 房主使用特殊key 'host'
+  if (store.isHost) {
+    return store.pendingInputs.has('host');
+  }
+  
+  // 非房主：检查自己的 userId 是否在 pendingInputs 中
+  return store.pendingInputs.has(store.currentUserId);
 });
 
 /** 格式预览 */
@@ -680,13 +690,6 @@ function formatUserMessage(userName: string, content: string, messagePrefix?: st
 
 function toggleMinimize() {
   isMinimized.value = !isMinimized.value;
-}
-
-function handleClose() {
-  if (store.isConnected) {
-    store.disconnect();
-  }
-  // 可以在这里添加隐藏面板的逻辑
 }
 
 function startDrag(e: MouseEvent) {
@@ -806,16 +809,16 @@ function hasUserSubmitted(userId: string): boolean {
   return store.pendingInputs.has(userId);
 }
 
-/** 非房主提交输入 */
-function submitInput() {
-  if (!userInput.value.trim()) return;
+/** 统一的输入提交函数（房主和非房主共用） */
+function handleSubmitInput() {
+  if (!currentUserInput.value.trim()) return;
   
-  // 客户端发送前先处理{name}替换（用自己的用户名）
-  const userName = settings.defaultUserName || store.userName || '用户';
+  const userName = settings.defaultUserName || store.userName || (store.isHost ? '房主' : '用户');
   const processedPrefix = settings.messagePrefix.replace('{name}', userName);
   
+  // 房主和非房主都通过网络发送（确保广播给所有人）
   // 如果开启了发送用户设定，先获取并发送用户设定
-  if (settings.sendUserPersona) {
+  if (settings.sendUserPersona && !store.isHost) {
     const persona = getPersonaDescription();
     if (persona) {
       const personaPrefixProcessed = settings.personaPrefix.replace('{name}', userName);
@@ -823,12 +826,13 @@ function submitInput() {
     }
   }
   
+  // 统一发送输入（房主和非房主都走网络）
   store.sendUserInput(
-    userInput.value.trim(),
+    currentUserInput.value.trim(),
     processedPrefix,
     settings.messageSuffix
   );
-  hasSubmitted.value = true;
+  
   store.addLog('system', '我', `输入已提交`);
 }
 
@@ -857,31 +861,9 @@ function getPersonaDescription(): string {
   }
 }
 
-/** 房主提交自己的输入（加入收集） */
-function handleRequestInput() {
-  if (!hostInput.value.trim()) {
-    store.addLog('error', '系统', '请输入内容');
-    return;
-  }
-  
-  // 房主提交前要处理{name}替换
-  const userName = settings.defaultUserName || store.userName || '房主';
-  const processedPrefix = settings.messagePrefix.replace('{name}', userName);
-  
-  // 房主的输入也加入到pendingInputs中（使用特殊key 'host'）
-  store.pendingInputs.set('host', {
-    userName: userName,
-    content: hostInput.value.trim(),
-    messagePrefix: processedPrefix,
-    messageSuffix: settings.messageSuffix,
-  });
-  
-  store.addLog('system', '我', '已提交输入');
-}
-
 /** 客户端请求同步历史消息 */
 function handleSyncHistory() {
-  store.requestSyncHistory();
+  store.requestSyncHistory(settings.syncHistoryDepth);
 }
 
 /** 客户端请求同步正则 */
@@ -899,7 +881,7 @@ function handleSyncVariables() {
 /** 房主重置输入状态 */
 function handleResetInput() {
   store.resetInputState();
-  hostInput.value = '';
+  currentUserInput.value = '';
 }
 
 /** 房主将合并的输入发送给酒馆AI */
@@ -941,9 +923,9 @@ async function sendCombinedToTavern() {
     
     store.addLog('ai', 'AI', '已触发AI回复');
     
-    // 清空输入
-    store.clearPendingInputs();
-    hostInput.value = '';
+    // 清空输入并广播给所有客户端
+    store.resetInputState();  // 使用 resetInputState 会自动广播
+    currentUserInput.value = '';
   } catch (error) {
     store.addLog('error', '系统', '发送失败: ' + (error as Error).message);
     console.error('发送失败:', error);
@@ -952,27 +934,23 @@ async function sendCombinedToTavern() {
 
 // 监听房主变更时重置提交状态
 watch(() => store.hostId, () => {
-  hasSubmitted.value = false;
-  userInput.value = '';
+  currentUserInput.value = '';
 });
 
-// 监听AI回复完成事件，重置提交状态（让非房主可以再次提交）
+// 监听AI回复完成事件，重置提交状态
 onMounted(() => {
   eventOn('multiplayer_ai_response', () => {
-    hasSubmitted.value = false;
-    userInput.value = '';
+    currentUserInput.value = '';
   });
   
-  // 非房主监听请求输入事件
+  // 监听请求输入事件
   eventOn('multiplayer_request_input', () => {
-    hasSubmitted.value = false;
-    userInput.value = '';
+    currentUserInput.value = '';
   });
   
-  // 非房主监听重置输入事件
+  // 监听重置输入事件
   eventOn('multiplayer_reset_input', () => {
-    hasSubmitted.value = false;
-    userInput.value = '';
+    currentUserInput.value = '';
   });
 });
 
@@ -1104,8 +1082,14 @@ watch(
   transition: background 0.2s;
 }
 
+
 .icon-btn:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn.danger-icon:hover {
+  background: rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
 }
 
 .close-btn:hover {

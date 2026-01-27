@@ -1,0 +1,794 @@
+i18n.js:125 Loading locale data from ./locales/zh-cn.json
+power-user.js:3219 Window resize: 444x684 -> 444x684
+eventemitter.js:46 EventEmitter: Cannot listen to undefined event
+EventEmitter.on @ eventemitter.js:46
+（匿名） @ handler.ts:905
+Bn @ index.ts:19
+（匿名） @ index.ts:50
+e @ jquery-3.5.1.min.js:2
+t @ jquery-3.5.1.min.js:2
+setTimeout
+（匿名） @ jquery-3.5.1.min.js:2
+c @ jquery-3.5.1.min.js:2
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+Deferred @ jquery-3.5.1.min.js:2
+then @ jquery-3.5.1.min.js:2
+S.fn.ready @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ index.ts:49
+（匿名） @ index.js:1
+index.ts:23 ST-Prompt-Template initialized
+faker.ts:11 [Prompt Template] Faker loaded
+faker.ts:12 (161) ['Aircraft', 'BitcoinAddressFamily', 'BitcoinNetwork', 'CssFunction', 'CssSpace', 'Faker', 'FakerError', 'IPv4Network', 'Sex', 'SimpleFaker', 'af_ZA', 'allFakers', 'allLocales', 'ar', 'az', 'base', 'bn_BD', 'cs_CZ', 'cy', 'da', 'de', 'de_AT', 'de_CH', 'dv', 'el', 'en', 'en_AU', 'en_AU_ocker', 'en_BORK', 'en_CA', 'en_GB', 'en_GH', 'en_HK', 'en_IE', 'en_IN', 'en_NG', 'en_US', 'en_ZA', 'eo', 'es', 'es_MX', 'fa', 'faker', 'fakerAF_ZA', 'fakerAR', 'fakerAZ', 'fakerBASE', 'fakerBN_BD', 'fakerCS_CZ', 'fakerCY', 'fakerDA', 'fakerDE', 'fakerDE_AT', 'fakerDE_CH', 'fakerDV', 'fakerEL', 'fakerEN', 'fakerEN_AU', 'fakerEN_AU_ocker', 'fakerEN_BORK', 'fakerEN_CA', 'fakerEN_GB', 'fakerEN_GH', 'fakerEN_HK', 'fakerEN_IE', 'fakerEN_IN', 'fakerEN_NG', 'fakerEN_US', 'fakerEN_ZA', 'fakerEO', 'fakerES', 'fakerES_MX', 'fakerFA', 'fakerFI', 'fakerFR', 'fakerFR_BE', 'fakerFR_CA', 'fakerFR_CH', 'fakerFR_LU', 'fakerFR_SN', 'fakerHE', 'fakerHR', 'fakerHU', 'fakerHY', 'fakerID_ID', 'fakerIT', 'fakerJA', 'fakerKA_GE', 'fakerKO', 'fakerLV', 'fakerMK', 'fakerNB_NO', 'fakerNE', 'fakerNL', 'fakerNL_BE', 'fakerPL', 'fakerPT_BR', 'fakerPT_PT', 'fakerRO', 'fakerRO_MD', …]
+hasher.ts:42 [Prompt Template] xxhash loaded
+system.js:120 Using default TTS Provider settings
+index.js:21 [QR2] sets:  [QuickReplySet]
+index.js:21 [QR2] settings:  QuickReplySettings {isEnabled: false, isCombined: false, isPopout: false, showPopoutButton: true, config: QuickReplyConfig, …}
+dynamic-styles.js:147 Failed to insert focus rule: SyntaxError: Failed to execute 'insertRule' on 'CSSStyleSheet': Failed to parse the rule '::-webkit-scrollbar-track:focus-visible { background-color: rgba(126, 126, 126, 0.2); }'.
+    at dynamic-styles.js:145:34
+    at Array.forEach (<anonymous>)
+    at applyDynamicFocusStyles (dynamic-styles.js:118:16)
+    at dynamic-styles.js:193:13
+    at Array.forEach (<anonymous>)
+    at initDynamicStyles (dynamic-styles.js:191:38)
+    at firstLoadInit (script.js:664:5)
+    at async HTMLDocument.<anonymous> (script.js:11021:5)
+（匿名） @ dynamic-styles.js:147
+applyDynamicFocusStyles @ dynamic-styles.js:118
+（匿名） @ dynamic-styles.js:193
+initDynamicStyles @ dynamic-styles.js:191
+firstLoadInit @ script.js:664
+await in firstLoadInit
+（匿名） @ script.js:11021
+e @ jquery-3.5.1.min.js:2
+t @ jquery-3.5.1.min.js:2
+setTimeout
+（匿名） @ jquery-3.5.1.min.js:2
+c @ jquery-3.5.1.min.js:2
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+Deferred @ jquery-3.5.1.min.js:2
+then @ jquery-3.5.1.min.js:2
+S.fn.ready @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ script.js:9387
+VM1224 about:srcdoc:9 <body class=​"no-blur drop_target no_animation noShadows no-tokenCount translate caption sd tts" data-stscript-style=​"theme" style=​"--ac-font-scale:​ 0.8;​">​…​</body>​<div id=​"preloader">​</div>​<div id=​"bg_custom">​</div>​<div id=​"bg1" style=​"background-image:​ url("backgrounds/​__transparent.png")​;​">​</div>​<div id=​"character_context_menu" class=​"hidden">​…​</div>​<!-- top bar central settings buttons --><div id=​"top-bar">​ ​</div>​<div id=​"top-settings-holder">​…​</div>​flex<!-- various fullscreen popups --><div name=​"templatesAndPopupsWrapper">​…​</div>​<div id=​"movingDivs">​…​</div>​<div id=​"sheld">​…​</div>​flex<div id=​"sheldheader" class=​"fa-solid fa-grip drag-grabber">​</div>​<div id=​"chat">​…​</div>​flex<div class=​"welcomePanel">​…​</div>​flex<div class=​"mes" mesid=​"0" ch_name=​"Assistant" is_user=​"false" is_system=​"false" bookmark_link swipeid=​"0" force_avatar=​"true" timestamp=​"2026年1月21日 12:​35" type=​"assistant_message">​…​</div>​flex<div class=​"for_checkbox">​</div>​<input type=​"checkbox" class=​"del_checkbox">​<div class=​"mesAvatarWrapper">​…​</div>​<div class=​"swipe_left fa-solid fa-chevron-left interactable" style=​"display:​ none;​" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_block">​…​</div>​<div class=​"ch_name flex-container justifySpaceBetween">​…​</div>​flex<details class=​"mes_reasoning_details" data-state=​"none" data-type=​"undefined">​…​</details>​<summary class=​"mes_reasoning_summary flex-container">​…​</summary>​flexslot<div class=​"mes_reasoning_header_block flex-container">​…​</div>​flex<div class=​"mes_reasoning_actions flex-container">​…​</div>​<div class=​"mes_reasoning_edit_done menu_button edit_button fa-solid fa-check interactable" title=​"确认" data-i18n=​"[title]​Confirm Edit" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_reasoning_delete menu_button edit_button fa-solid fa-trash-can interactable" title=​"删除推理内容" data-i18n=​"[title]​Remove reasoning" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_reasoning_edit_cancel menu_button edit_button fa-solid fa-xmark interactable" title=​"取消编辑" data-i18n=​"[title]​Cancel edit" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_reasoning_close_all mes_button fa-solid fa-minimize" title=​"折叠所有推理块" data-i18n=​"[title]​Collapse all reasoning blocks" role=​"button">​</div>​<div class=​"mes_reasoning_copy mes_button fa-solid fa-copy" title=​"复制推理内容" data-i18n=​"[title]​Copy reasoning" role=​"button">​</div>​<div class=​"mes_reasoning_edit mes_button fa-solid fa-pencil" title=​"编辑推理内容" data-i18n=​"[title]​Edit reasoning" role=​"button">​</div>​</div>​</summary>​<div class=​"mes_reasoning">​</div>​slot</details>​<div class=​"mes_text">​…​</div>​<div class=​"mes_img_container">​…​</div>​<div class=​"mes_bias">​</div>​</div>​<div class=​"flex-container swipeRightBlock flexFlowColumn flexNoGap">​…​</div>​flex</div>​<div class=​"mes smallSysMes last_mes" mesid=​"1" ch_name=​"SillyTavern System" is_user=​"false" is_system=​"true" bookmark_link swipeid=​"0" force_avatar=​"true" timestamp=​"2026年1月21日 12:​35" type=​"welcome_prompt">​…​</div>​flex<div class=​"for_checkbox">​</div>​<input type=​"checkbox" class=​"del_checkbox">​<div class=​"mesAvatarWrapper">​…​</div>​<div class=​"swipe_left fa-solid fa-chevron-left interactable" style=​"display:​ none;​" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_block">​…​</div>​<div class=​"ch_name flex-container justifySpaceBetween">​…​</div>​<details class=​"mes_reasoning_details" data-state=​"none" data-type=​"undefined">​…​</details>​<summary class=​"mes_reasoning_summary flex-container">​…​</summary>​flexslot<div class=​"mes_reasoning_header_block flex-container">​…​</div>​flex<div class=​"mes_reasoning_actions flex-container">​…​</div>​<div class=​"mes_reasoning_edit_done menu_button edit_button fa-solid fa-check interactable" title=​"确认" data-i18n=​"[title]​Confirm Edit" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_reasoning_delete menu_button edit_button fa-solid fa-trash-can interactable" title=​"删除推理内容" data-i18n=​"[title]​Remove reasoning" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_reasoning_edit_cancel menu_button edit_button fa-solid fa-xmark interactable" title=​"取消编辑" data-i18n=​"[title]​Cancel edit" tabindex=​"0" role=​"button">​</div>​<div class=​"mes_reasoning_close_all mes_button fa-solid fa-minimize" title=​"折叠所有推理块" data-i18n=​"[title]​Collapse all reasoning blocks" role=​"button">​</div>​<div class=​"mes_reasoning_copy mes_button fa-solid fa-copy" title=​"复制推理内容" data-i18n=​"[title]​Copy reasoning" role=​"button">​</div>​<div class=​"mes_reasoning_edit mes_button fa-solid fa-pencil" title=​"编辑推理内容" data-i18n=​"[title]​Edit reasoning" role=​"button">​</div>​</div>​</summary>​<div class=​"mes_reasoning">​</div>​slot</details>​<div class=​"mes_text">​…​</div>​<div class=​"mes_img_container">​…​</div>​<div class=​"mes_bias">​</div>​</div>​<div class=​"flex-container swipeRightBlock flexFlowColumn flexNoGap">​…​</div>​flex</div>​" "</div>​<div id=​"form_sheld">​…​</div>​</div>​<!-- popups live outside sheld to avoid blur conflicts --><div id=​"options" class=​"font-family-reset" style=​"display:​ none;​ position:​ absolute;​ inset:​ auto auto 0px 0px;​ margin:​ 0px;​ transform:​ translate3d(2.85714px, -38.2857px, 0px)​;​" data-popper-placement=​"top-start">​…​</div>​<!-- Area for hidden data lists for secrets autosuggests --><div id=​"secrets_datalists" class=​"displayNone">​…​</div>​<!-- Script includes --><script src=​"lib/​polyfill.js">​</script>​<script src=​"lib/​jquery-3.5.1.min.js">​</script>​<script src=​"lib/​jquery-ui.min.js">​</script>​<script src=​"lib/​jquery.transit.min.js">​</script>​<script src=​"lib/​jquery-cookie-1.4.1.min.js">​</script>​<script src=​"lib/​jquery.ui.touch-punch.min.js">​</script>​<script src=​"lib/​cropper.min.js">​</script>​<script src=​"lib/​jquery-cropper.min.js">​</script>​<script src=​"lib/​toastr.min.js">​</script>​<script src=​"lib/​select2.min.js">​</script>​<script src=​"lib/​select2-search-placeholder.js">​</script>​<script src=​"lib/​pagination.js">​</script>​<script src=​"lib/​toolcool-color-picker.js">​</script>​<script src=​"lib/​jquery.izoomify.js">​</script>​<script type=​"module" src=​"lib/​structured-clone/​monkey-patch.js">​</script>​<script type=​"module" src=​"lib/​swiped-events.js">​</script>​<script type=​"module" src=​"lib/​eventemitter.js">​</script>​<script type=​"module" src=​"scripts/​i18n.js">​</script>​<script type=​"module" src=​"script.js">​</script>​<script>​…​</script>​<browser-mcp-container data-wxt-shadow-root>​…​</browser-mcp-container>​<dialog class=​"popup transparent_dialogue_popup popup--animation-none" data-id=​"e786114b-c5c6-461e-a541-e67ce2becd0b" open>​…​</dialog>​flex<div id=​"extensionsMenu" class=​"options-content" style=​"display:​ none;​ position:​ absolute;​ inset:​ auto auto 0px 0px;​ margin:​ 0px;​ transform:​ translate3d(0px, -684px, 0px)​;​" data-popper-reference-hidden data-popper-escaped data-popper-placement=​"top-start">​…​</div>​<script id=​"translate-js" type=​"module" src=​"/​scripts/​extensions/​translate/​index.js" async>​</script>​<script id=​"connection-manager-js" type=​"module" src=​"/​scripts/​extensions/​connection-manager/​index.js" async>​</script>​<script id=​"third-party_ST-Prompt-Template-js" type=​"module" src=​"/​scripts/​extensions/​third-party/​ST-Prompt-Template/​dist/​index.js" async>​</script>​<script id=​"regex-js" type=​"module" src=​"/​scripts/​extensions/​regex/​index.js" async>​</script>​<script id=​"attachments-js" type=​"module" src=​"/​scripts/​extensions/​attachments/​index.js" async>​</script>​<script id=​"caption-js" type=​"module" src=​"/​scripts/​extensions/​caption/​index.js" async>​</script>​<script id=​"expressions-js" type=​"module" src=​"/​scripts/​extensions/​expressions/​index.js" async>​</script>​<div id=​"expression-wrapper">​…​</div>​flex<div id=​"visual-novel-wrapper" style=​"display:​ none;​">​ ​</div>​<script id=​"gallery-js" type=​"module" src=​"/​scripts/​extensions/​gallery/​index.js" async>​</script>​<script id=​"memory-js" type=​"module" src=​"/​scripts/​extensions/​memory/​index.js" async>​</script>​<script id=​"stable-diffusion-js" type=​"module" src=​"/​scripts/​extensions/​stable-diffusion/​index.js" async>​</script>​<script id=​"tts-js" type=​"module" src=​"/​scripts/​extensions/​tts/​index.js" async>​</script>​<div id=​"sd_dropdown" data-popper-reference-hidden data-popper-escaped data-popper-placement=​"top" style=​"display:​ none;​ position:​ absolute;​ inset:​ auto auto 0px 0px;​ margin:​ 0px;​ transform:​ translate3d(0px, -684px, 0px)​;​">​…​</div>​<script id=​"quick-reply-js" type=​"module" src=​"/​scripts/​extensions/​quick-reply/​index.js" async>​</script>​<audio preload=​"auto" id=​"tts_audio" autoplay>​</audio>​media<script id=​"assets-js" type=​"module" src=​"/​scripts/​extensions/​assets/​index.js" async>​</script>​<script id=​"token-counter-js" type=​"module" src=​"/​scripts/​extensions/​token-counter/​index.js" async>​</script>​<script id=​"third-party_JS-Slash-Runner-js" type=​"module" src=​"/​scripts/​extensions/​third-party/​JS-Slash-Runner/​dist/​index.js" async>​</script>​<script id=​"vectors-js" type=​"module" src=​"/​scripts/​extensions/​vectors/​index.js" async>​</script>​<ul id=​"ui-id-1" tabindex=​"0" class=​"ui-menu ui-widget ui-widget-content ui-autocomplete ui-front" unselectable=​"on" style=​"display:​ none;​">​</ul>​<div role=​"status" aria-live=​"assertive" aria-relevant=​"additions" class=​"ui-helper-hidden-accessible">​</div>​<ul id=​"ui-id-2" tabindex=​"0" class=​"ui-menu ui-widget ui-widget-content ui-autocomplete ui-front" unselectable=​"on" style=​"display:​ none;​">​</ul>​<div role=​"status" aria-live=​"assertive" aria-relevant=​"additions" class=​"ui-helper-hidden-accessible">​</div>​<iframe id=​"TH-script--联机mod--06b6fb96-efb5-456b-ba32-8d964f469a14" name=​"TH-script--联机mod--06b6fb96-efb5-456b-ba32-8d964f469a14" srcdoc=​"<html>
+<head>
+
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue/​dist/​vue.runtime.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue-router/​dist/​vue-router.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​pixi.js/​dist/​pixi.min.js"></​script>
+
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​5a1c5b19-e952-4fea-980f-9c64894d851a"></​script>
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​2ad47618-97bb-486d-813a-5b28433b7793"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​gh/​N0VI028/​JS-Slash-Runner/​src/​iframe/​node_modules/​log.js"></​script>
+</​head>
+<body>
+<script type="module">
+import'https:​/​/​testingcf.jsdelivr.net/​npm/​@vueuse/​core/​+esm';​import{createPinia as e,defineStore as t}​from'https:​/​/​testingcf.jsdelivr.net/​npm/​pinia/​+esm';​var a={190:​(e,t,a)​=>{a.r(t)​,a.d(t,{default:​()​=>i}​)​;​var n=a(550)​,s=a.n(n)​,o=a(231)​,r=a.n(o)​()​(s()​)​;​r.push([e.id,'.multiplayer-panel[data-v-5dfaf815]​{position:​fixed;​width:​320px;​max-height:​calc(100vh - 40px)​;​background:​linear-gradient(135deg,rgba(30,30,45,0.98)​ 0%,rgba(20,20,35,0.98)​ 100%)​;​border-radius:​16px;​box-shadow:​0 8px 32px rgba(0,0,0,0.5)​,0 0 0 1px rgba(255,255,255,0.1)​;​backdrop-filter:​blur(12px)​;​z-index:​99999;​font-family:​\'Segoe UI\',system-ui,sans-serif;​font-size:​13px;​color:​#e0e0e0;​display:​flex;​flex-direction:​column;​overflow:​hidden;​transition:​all 0.3s ease}​.multiplayer-panel.minimized[data-v-5dfaf815]​{width:​180px;​max-height:​44px}​.multiplayer-panel.dragging[data-v-5dfaf815]​{opacity:​0.9;​cursor:​grabbing}​.panel-header[data-v-5dfaf815]​{display:​flex;​justify-content:​space-between;​align-items:​center;​padding:​12px 14px;​background:​linear-gradient(90deg,rgba(80,60,180,0.3)​ 0%,rgba(60,80,180,0.3)​ 100%)​;​cursor:​grab;​-webkit-user-select:​none;​user-select:​none}​.header-left[data-v-5dfaf815]​{display:​flex;​align-items:​center;​gap:​8px}​.title[data-v-5dfaf815]​{font-weight:​600;​font-size:​14px;​color:​#fff}​.status-dot[data-v-5dfaf815]​{width:​8px;​height:​8px;​border-radius:​50%;​background:​#666}​.status-dot.connected[data-v-5dfaf815]​{background:​#4ade80;​box-shadow:​0 0 8px #4ade80}​.status-dot.connecting[data-v-5dfaf815]​{background:​#facc15;​animation:​pulse-5dfaf815 1s infinite}​.status-dot.unstable[data-v-5dfaf815]​{background:​#facc15;​animation:​pulse-5dfaf815 0.5s infinite}​.status-dot.disconnected[data-v-5dfaf815]​{background:​#666}​@keyframes pulse-5dfaf815{0%,100%{opacity:​1}​50%{opacity:​0.5}​}​.header-actions[data-v-5dfaf815]​{display:​flex;​gap:​4px}​.icon-btn[data-v-5dfaf815]​{width:​24px;​height:​24px;​border:​none;​background:​rgba(255,255,255,0.1)​;​color:​#fff;​border-radius:​6px;​cursor:​pointer;​display:​flex;​align-items:​center;​justify-content:​center;​font-size:​14px;​transition:​background 0.2s}​.icon-btn[data-v-5dfaf815]​:​hover{background:​rgba(255,255,255,0.2)​}​.close-btn[data-v-5dfaf815]​:​hover{background:​rgba(239,68,68,0.6)​}​.panel-content[data-v-5dfaf815]​{flex:​1;​display:​flex;​flex-direction:​column;​padding:​10px;​gap:​8px;​overflow-y:​auto;​overflow-x:​hidden}​.settings-section[data-v-5dfaf815]​{display:​flex;​flex-direction:​column;​gap:​10px}​.setting-row[data-v-5dfaf815]​{display:​flex;​align-items:​center;​gap:​8px}​.setting-row label[data-v-5dfaf815]​{min-width:​70px;​color:​#a0a0a0;​font-size:​12px}​.input-field[data-v-5dfaf815]​{flex:​1;​padding:​8px 10px;​background:​rgba(255,255,255,0.08)​;​border:​1px solid rgba(255,255,255,0.15)​;​border-radius:​8px;​color:​#fff;​font-size:​13px;​outline:​none;​transition:​border-color 0.2s,background 0.2s}​.input-field[data-v-5dfaf815]​:​focus{border-color:​rgba(100,100,255,0.5)​;​background:​rgba(255,255,255,0.12)​}​.input-field.small[data-v-5dfaf815]​{max-width:​80px}​.input-field.tiny[data-v-5dfaf815]​{max-width:​60px}​.online-rooms-section[data-v-5dfaf815]​{display:​flex;​flex-direction:​column;​gap:​10px;​margin-top:​8px}​.section-header[data-v-5dfaf815]​{display:​flex;​justify-content:​space-between;​align-items:​center}​.refresh-btn[data-v-5dfaf815]​{width:​28px;​height:​28px;​border:​none;​background:​rgba(255,255,255,0.1)​;​border-radius:​6px;​cursor:​pointer;​font-size:​14px;​transition:​background 0.2s}​.refresh-btn[data-v-5dfaf815]​:​hover:​not(:​disabled)​{background:​rgba(255,255,255,0.2)​}​.refresh-btn[data-v-5dfaf815]​:​disabled{opacity:​0.5;​cursor:​not-allowed}​.room-list[data-v-5dfaf815]​{display:​flex;​flex-direction:​column;​gap:​6px;​max-height:​150px;​overflow-y:​auto}​.room-item[data-v-5dfaf815]​{padding:​8px 10px;​background:​rgba(255,255,255,0.05)​;​border:​1px solid rgba(255,255,255,0.1)​;​border-radius:​8px;​cursor:​pointer;​transition:​all 0.2s}​.room-item[data-v-5dfaf815]​:​hover{background:​rgba(255,255,255,0.1)​;​border-color:​rgba(99,102,241,0.3)​}​.room-item.selected[data-v-5dfaf815]​{background:​rgba(99,102,241,0.2)​;​border-color:​rgba(99,102,241,0.5)​}​.room-info[data-v-5dfaf81….()​,a=t?.chat;​if(!a||0===a.length)​return console.log('[联机Mod]​ getACUTableData:​ 无法获取chat数据')​,null;​for(let e=a.length-1;​e>=0;​e--)​{const t=a[e]​;​if(t.TavernDB_ACU_IsolatedData)​{const e=Object.keys(t.TavernDB_ACU_IsolatedData)​[0]​||'',a=t.TavernDB_ACU_IsolatedData[e]​;​if(a)​return{isolationKey:​e,tables:​a.independentData||{}​,modifiedKeys:​a.modifiedKeys||[]​,targetMessageId:​t.id}​}​if(t.TavernDB_ACU_IndependentData)​return{isolationKey:​t.TavernDB_ACU_Identity||'',tables:​t.TavernDB_ACU_IndependentData,modifiedKeys:​t.TavernDB_ACU_ModifiedKeys||[]​,targetMessageId:​t.id}​}​return null}​;​setTimeout(s,2e3)​,eventOn('multiplayer_acu_full_sync',async e=>{const t=u()​;​if(!t.isHost)​try{await r(e,!0)​,t.addLog('system','系统','[神化再临]​ 全量同步完成')​}​catch(e)​{t.addLog('error','系统',`[神化再临]​ 同步失败:​ ${e}​`)​,console.error('[联机Mod]​ 神化再临全量同步失败:​',e)​}​}​)​,eventOn('multiplayer_acu_delta_sync',async e=>{const t=u()​;​if(!t.isHost)​try{await r(e,!1)​,t.addLog('system','系统','[神化再临]​ 增量同步完成')​}​catch(e)​{t.addLog('error','系统',`[神化再临]​ 同步失败:​ ${e}​`)​,console.error('[联机Mod]​ 神化再临增量同步失败:​',e)​}​}​)​;​const r=async(e,t)​=>{const a=n()​;​if(a.AutoCardUpdaterAPI?.importTableAsJson)​try{const n={mate:​{type:​'chatSheets',version:​1}​}​;​Object.keys(e.tables)​.forEach(t=>{t.startsWith('sheet_')​&&(n[t]​=JSON.parse(JSON.stringify(e.tables[t]​)​)​)​}​)​,console.log('[联机Mod]​ 使用 importTableAsJson 导入数据:​',{tableCount:​Object.keys(n)​.filter(e=>e.startsWith('sheet_')​)​.length,isFullSync:​t}​)​,await a.AutoCardUpdaterAPI.importTableAsJson(JSON.stringify(n)​)​?console.log('[联机Mod]​ 神化再临数据导入成功')​:​console.warn('[联机Mod]​ 神化再临数据导入失败')​}​catch(e)​{console.error('[联机Mod]​ 调用 importTableAsJson 失败:​',e)​}​else{console.log('[联机Mod]​ importTableAsJson 不可用，使用手动写入')​;​const n=a.SillyTavern?.getContext?.()​,s=n?.chat;​if(!s||0===s.length)​return void console.log('[联机Mod]​ applyACUData:​ 无法获取chat数据')​;​let o=-1;​for(let e=s.length-1;​e>=0;​e--)​if(!s[e]​.is_user)​{o=e;​break}​if(-1===o)​return void console.warn('[联机Mod]​ 没有AI消息，无法写入神化再临数据')​;​const r=s[o]​;​r.TavernDB_ACU_IsolatedData||(r.TavernDB_ACU_IsolatedData={}​)​,r.TavernDB_ACU_IsolatedData[e.isolationKey]​||(r.TavernDB_ACU_IsolatedData[e.isolationKey]​={independentData:​{}​,modifiedKeys:​[]​,updateGroupKeys:​[]​}​)​;​const i=r.TavernDB_ACU_IsolatedData[e.isolationKey]​;​t?(i.independentData=e.tables,i.modifiedKeys=Object.keys(e.tables)​)​:​(Object.assign(i.independentData,e.tables)​,e.modifiedKeys&&e.modifiedKeys.forEach(e=>{i.modifiedKeys.includes(e)​||i.modifiedKeys.push(e)​}​)​)​;​try{const e=a.SillyTavern?.getContext?.()​;​e?.saveChat&&(await e.saveChat()​,console.log('[联机Mod]​ 神化再临数据已持久化')​)​}​catch(e)​{console.warn('[联机Mod]​ 持久化神化再临数据失败:​',e)​}​if(a.AutoCardUpdaterAPI?.refreshMergedDataAndNotify)​try{await a.AutoCardUpdaterAPI.refreshMergedDataAndNotify()​}​catch(e)​{console.warn('[联机Mod]​ 触发神化再临刷新失败:​',e)​}​}​}​}​()​,function()​{const e=(window.top||window.parent||window)​.document;​e.getElementById('multiplayer-spoiler-styles')​||e.head.insertAdjacentHTML('beforeend','\n    <style id="multiplayer-spoiler-styles">\n      .mp-spoiler {\n        background-color:​ #4a4a4a;​\n        color:​ transparent;​\n        cursor:​ pointer;​\n        border-radius:​ 3px;​\n        padding:​ 0 4px;​\n        transition:​ all 0.2s ease;​\n        user-select:​ none;​\n      }​\n      .mp-spoiler:​hover {\n        background-color:​ #5a5a5a;​\n      }​\n      .mp-spoiler.revealed {\n        background-color:​ transparent;​\n        color:​ inherit;​\n        cursor:​ text;​\n        user-select:​ auto;​\n      }​\n    </​style>\n  ')​;​const t=t=>{const a=e.createTreeWalker(t,NodeFilter.SHOW_TEXT,null)​,n=[]​;​for(;​a.nextNode()​;​)​{const e=a.currentNode;​e.textContent&&e.textContent.includes('||')​&&n.push(e)​}​n.forEach(t=>{const a=t.textContent||'',n=/​\|\|(.+?)​\|\|/​g;​if(n.test(a)​)​{const s=e.createDocumentFragment()​;​let o,r=0;​for(n.lastIndex=0;​null!==(o=n.exec(a)​)​;​)​{o.index>r&&s.appendChild(e.createTextNode(a.slice(r,o.index)​)​)​;​const t=e.createElement('span')​;​t.className='mp-spoiler',t.textContent=o[1]​,t.addEventListener('click',function()​{this.classList.toggle('revealed')​}​)​,s.appendChild(t)​,r=o.index+o[0]​.length}​r<a.length&&s.appendChild(e.createTextNode(a.slice(r)​)​)​,t.parentNode?.replaceChild(s,t)​}​}​)​}​,a=a=>{setTimeout(()​=>{const n=e.querySelector(`[mesid="${a}​"]​ .mes_text`)​;​n&&t(n)​}​,50)​}​;​eventOn(tavern_events.USER_MESSAGE_RENDERED,a)​,eventOn(tavern_events.CHARACTER_MESSAGE_RENDERED,a)​,setTimeout(()​=>{e.querySelectorAll('.mes_text')​.forEach(e=>{t(e)​}​)​}​,1e3)​,console.log('[联机Mod]​ Spoiler遮罩功能已启用')​}​()​,toastr.success('联机mod已加载！配置悬浮窗开始使用。','联机')​}​)​,$(window)​.on('unload',()​=>{const e=u()​;​e.isConnected&&e.disconnect()​,Oe.unmount()​,function()​{const e='function'==typeof getScriptId?getScriptId()​:​'multiplayer-mod';​$(`head > div[script_id="${e}​"]​`)​.remove()​}​()​,$(`#${Pe}​`)​.remove()​}​)​;​
+</​script>
+</​body>
+</​html>
+" style=​"display:​ none;​">​…​</iframe>​<iframe id=​"TH-script--神化再临·数据库v10.5--1c7b0c7d-fd89-4005-9209-812a65c98909" name=​"TH-script--神化再临·数据库v10.5--1c7b0c7d-fd89-4005-9209-812a65c98909" srcdoc=​"<html>
+<head>
+
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue/​dist/​vue.runtime.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue-router/​dist/​vue-router.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​pixi.js/​dist/​pixi.min.js"></​script>
+
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​5a1c5b19-e952-4fea-980f-9c64894d851a"></​script>
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​2ad47618-97bb-486d-813a-5b28433b7793"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​gh/​N0VI028/​JS-Slash-Runner/​src/​iframe/​node_modules/​log.js"></​script>
+</​head>
+<body>
+<script type="module">
+import 'https:​/​/​gcore.jsdelivr.net/​gh/​AlbusKen/​shujuku@v12.5/​index.js'
+</​script>
+</​body>
+</​html>
+" style=​"display:​ none;​">​…​</iframe>​<iframe id=​"TH-script--【kemini】--3be40716-0030-409f-b240-d7723a88cd6e" name=​"TH-script--【kemini】--3be40716-0030-409f-b240-d7723a88cd6e" srcdoc=​"<html>
+<head>
+
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue/​dist/​vue.runtime.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue-router/​dist/​vue-router.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​pixi.js/​dist/​pixi.min.js"></​script>
+
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​5a1c5b19-e952-4fea-980f-9c64894d851a"></​script>
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​2ad47618-97bb-486d-813a-5b28433b7793"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​gh/​N0VI028/​JS-Slash-Runner/​src/​iframe/​node_modules/​log.js"></​script>
+</​head>
+<body>
+<script type="module">
+const Config = z
+  .object({
+    user:​ z.string()​.default('Human')​,
+    assistant:​ z.string()​.default('Assistant')​,
+    example_user:​ z.string()​.default('H')​,
+    example_assistant:​ z.string()​.default('A')​,
+    system:​ z.string()​.default('SYSTEM')​,
+    separator:​ z.string()​.default('')​,
+    separator_system:​ z.string()​.default('')​,
+    prefill_user:​ z.string()​.default('Continue the conversation.')​,
+    capture_enabled:​ z.boolean()​.default(true)​,
+    capture_rules:​ z.array(z.any()​)​.default([]​)​,
+    stored_data:​ z.any()​.default({}​)​,
+  }​)​
+  .prefault({}​)​;​
+
+/​/​ 获取存储数据
+function getStoredData()​ {
+  const data = Config.parse(getVariables({ type:​ 'script', script_id:​ getScriptId()​ }​)​)​;​
+  insertVariables(data, { type:​ 'script', script_id:​ getScriptId()​ }​)​;​
+  return _.get(data, 'stored_data', {}​)​;​
+}​
+
+/​/​ 保存存储数据
+function saveStoredData(data)​ {
+  updateVariablesWith(
+    variables => {
+      _.set(variables, 'stored_data', data)​;​
+      return variables;​
+    }​,
+    { type:​ 'script', script_id:​ getScriptId()​ }​,
+  )​;​
+}​
+
+function onSettingButtonClick()​ {
+  let root = document.createElement('div')​;​
+  root.setAttribute('class', 'merge_editor')​;​
+
+  const tips = document.createElement('h3')​;​
+  {
+    root.appendChild(tips)​;​
+    tips.setAttribute('class', 'flex-container justifyCenter alignItemsBaseline')​;​
+    const strong = document.createElement('strong')​;​
+    strong.appendChild(document.createTextNode('merge Config')​)​;​
+    tips.appendChild(strong)​;​
+
+    const small = document.createElement('small')​;​
+    small.setAttribute('class', 'flex-container extensions_info')​;​
+    small.appendChild(document.createTextNode('该代码为 https:​/​/​github.com/​teralomaniac/​clewd 中的片段。')​)​;​
+    small.setAttribute('style', 'margin-top:​ 20px')​;​
+    root.appendChild(small)​;​
+    const hr = document.createElement('hr')​;​
+    root.appendChild(hr)​;​
+  }​
+
+  const content = document.createElement('div')​;​
+  {
+    root.appendChild(content)​;​
+    content.setAttribute('class', 'flex-container flexFlowColumn')​;​
+    const width120 = 150;​
+
+    /​/​ 原有配置项
+    [
+      'user',
+      'assistant',
+      'example_user',
+      'example_assistant',
+      'system',
+      'separator',
+      'separator_system',
+      'prefill_user',
+    ]​.forEach(function (item)​ {
+      const row = document.createElement('div')​;​
+      {
+        content.appendChild(row)​;​
+        row.setAttribute('class', 'flex-container')​;​
+        const box = document.createElement('div')​;​
+        {
+          box.setAttribute('class', 'flex1 flex-container')​;​
+          const label = document.createElement('label')​;​
+          label.setAttribute('class', 'title_restorable')​;​
+          label.setAttribute('style', 'width:​ ' + width120 + 'px;​ justify-content:​ flex-end;​ padding-right:​ 10px;​')​;​
+          const small = document.createElement('small')​;​
+          small.appendChild(document.createTextNode(item + ':​ ')​)​;​
+          label.appendChild(small)​;​
+          box.appendChild(label)​;​
+          const div = document.createElement('div')​;​
+          const input = document.createElement('input')​;​
+          input.setAttribute('class', 'config_' + item + ' text_pole textarea_compact')​;​
+          div.appendChild(input)​;​
+          box.appendChild(div)​;​
+          row.appendChild(box)​;​
+        }​
+      }​
+    }​)​;​
+
+    /​/​ 新增：全局数据捕获开关
+    const globalSwitchRow = document.createElement('div')​;​
+    globalSwitchRow.setAttribute('class', 'flex-container')​;​
+    globalSwitchRow.setAttribute(
+      'style',
+      'margin-top:​ 20px;​ margin-bottom:​ 10px;​ padding:​ 10px;​ background-color:​ #f5f5f5;​ border-radius:​ 5px;​',
+    )​;​
+
+    const switchLabel = document.createElement('label')​;​
+    switchLabel.setAttribute('class', 'title_restorable')​;​
+    switchLabel.setAttribute(
+      'style',
+      'width:​ ' + width120 + 'px;​ justify-content:​ flex-end;​ padding-right:​ 10px;​ align-items:​ center;​ display:​ flex;​',
+    )​;​
+    const switchLabelText = document.createElement('small')​;​
+    switchLabelText.appendChild(document.createTextNode('数据捕获功能:​ ')​)​;​
+    switchLabel.appendChild(switchLabelText)​;​
+
+    const switchContainer = document.createElement('div')​;​
+    switchContainer.setAttri…    try {
+            const reg = /​<regex(?:​ +order *= *\d)​?> *"(\/​?)​(.*)​\1(.*?)​" *:​ *"(.*?)​" *<\/​regex>/​.exec(match)​;​
+            regexLog += match + '\n';​
+            const replacePattern = new RegExp(reg[2]​, reg[3]​)​;​
+            const replacement = JSON.parse('"' + reg[4]​.replace(/​\\?"/​g, '\\"')​ + '"')​;​
+            content = content.replace(replacePattern, replacement)​;​
+          }​ catch (e)​ {
+            console.warn('Regex processing error:​', e)​;​
+          }​
+        }​
+      }​
+      return [content, regexLog]​;​
+    }​;​
+
+    const HyperPmtProcess = function (content)​ {
+      const regex1 = hyperRegex(content, 1)​;​
+      content = regex1[0]​;​
+      regexLogs += regex1[1]​;​
+
+      const mergeDisable = {
+        all:​ content.indexOf('<|Merge Disable|>')​ !== -1,
+        system:​ content.indexOf('<|Merge System Disable|>')​ !== -1,
+        user:​ content.indexOf('<|Merge Human Disable|>')​ !== -1,
+        assistant:​ content.indexOf('<|Merge Assistant Disable|>')​ !== -1,
+      }​;​
+
+      const systemPattern1 = new RegExp(
+        '(\\n\\n|^\\s*)​(?<!\\n\\n(' +
+          prefixs['user']​ +
+          '|' +
+          prefixs['assistant']​ +
+          ')​:​.*?)​' +
+          prefixs['system']​ +
+          ':​\\s*',
+        'gs',
+      )​;​
+      const systemPattern2 = new RegExp('(\\n\\n|^\\s*)​' + prefixs['system']​ + ':​ *', 'g')​;​
+
+      content = content
+        .replace(systemPattern1, '$1')​
+        .replace(
+          systemPattern2,
+          mergeDisable.all || mergeDisable.user || mergeDisable.system ? '$1' :​ '\n\n' + prefixs['user']​ + ':​ ',
+        )​;​
+      content = hyperMerge(content, mergeDisable)​;​
+
+      const splitPattern = new RegExp('\\n\\n(?=' + prefixs['assistant']​ + ':​|' + prefixs['user']​ + ':​)​', 'g')​;​
+      const splitContent = content.split(splitPattern)​;​
+
+      let match;​
+      const atPattern = /​<@(\d+)​>(.*?)​<\/​@\1>/​gs;​
+      while ((match = atPattern.exec(content)​)​ !== null)​ {
+        const index = splitContent.length - parseInt(match[1]​)​ - 1;​
+        if (index >= 0)​ {
+          splitContent[index]​ += '\n\n' + match[2]​;​
+        }​
+        content = content.replace(match[0]​, '')​;​
+      }​
+
+      content = splitContent.join('\n\n')​.replace(/​<@(\d+)​>.*?<\/​@\1>/​gs, '')​;​
+
+      const regex2 = hyperRegex(content, 2)​;​
+      content = regex2[0]​;​
+      regexLogs += regex2[1]​;​
+      content = hyperMerge(content, mergeDisable)​;​
+
+      const regex3 = hyperRegex(content, 3)​;​
+      content = regex3[0]​;​
+      regexLogs += regex3[1]​;​
+
+      content = content
+        .replace(/​<regex( +order *= *\d)​?>.*?<\/​regex>/​gm, '')​
+        .replace(/​\r\n|\r/​gm, '\n')​
+        .replace(/​\s*<\|curtail\|>\s*/​g, '\n')​
+        .replace(/​\s*<\|join\|>\s*/​g, '')​
+        .replace(/​\s*<\|space\|>\s*/​g, ' ')​
+        .replace(/​<\|(\\.*?)​\|>/​g, function (match, p1)​ {
+          try {
+            return JSON.parse('"' + p1 + '"')​;​
+          }​ catch {
+            return match;​
+          }​
+        }​)​;​
+
+      return content
+        .replace(/​\s*<\|.*?\|>\s*/​g, '\n\n')​
+        .trim()​
+        .replace(/​^.+:​/​, '\n\n$&')​
+        .replace(/​(?<=\n)​\n(?=\n)​/​g, '')​;​
+    }​;​
+
+    let prompt = system || '';​
+    let regexLogs = '';​
+
+    if (!messages || messages.length === 0)​ {
+      return { prompt:​ '', log:​ '' }​;​
+    }​
+
+    for (let i = 0;​ i < messages.length;​ i++)​ {
+      const message = messages[i]​;​
+      if (message && message.content)​ {
+        const role = message.role || 'user';​
+        const name = message.name;​
+        const prefixLookup = prefixs[name]​ || prefixs[role]​ || role;​
+        const prefix = '\n\n' + prefixLookup + (name ? ':​ ' + name :​ '')​ + ':​ ';​
+        prompt += prefix + message.content.trim()​;​
+      }​ else {
+        console.warn('Skipping invalid message object:​', message)​;​
+      }​
+    }​
+
+    prompt = HyperPmtProcess(prompt)​;​
+    if (!claudeMode && prompt)​ {
+      prompt += '\n\n' + prefixs['assistant']​ + ':​';​
+    }​
+    return { prompt:​ prompt, log:​ '\n####### Regex:​\n' + regexLogs }​;​
+  }​;​
+
+  let separator = '';​
+  if (prefixs.separator)​ {
+    try {
+      separator = JSON.parse('"' + prefixs.separator + '"')​;​
+    }​ catch (e)​ {
+      console.error(e)​;​
+    }​
+  }​
+
+  const youPmtProcess = function (prompt, separator)​ {
+    if (typeof prompt !== 'string' || !prompt)​ return '';​
+    const splitPattern = new RegExp('\\n\\n(?=' + prefixs['assistant']​ + ':​|' + prefixs['user']​ + ':​)​', 'g')​;​
+    return prompt.split(splitPattern)​.join('\n' + separator + '\n')​;​
+  }​;​
+
+  const result = HyperProcess('', messages, true)​;​
+  const prompt = result.prompt;​
+
+  const youPrompt = prompt.split(/​\s*\[-youFileTag-\]​\s*/​)​;​
+  const filePrompt = youPrompt.length > 0 ? youPrompt.pop()​.trim()​ :​ '';​
+
+  return {
+    role:​ 'assistant',
+    content:​ youPmtProcess(filePrompt, separator)​,
+  }​;​
+}​
+
+</​script>
+</​body>
+</​html>
+" style=​"display:​ none;​">​…​</iframe>​<iframe id=​"TH-script--【SoliUmbra】预设内置正则 v2--ae352bbe-bbea-42c6-ab73-5c129dfd9be1" name=​"TH-script--【SoliUmbra】预设内置正则 v2--ae352bbe-bbea-42c6-ab73-5c129dfd9be1" srcdoc=​"<html>
+<head>
+
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue/​dist/​vue.runtime.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​vue-router/​dist/​vue-router.global.prod.min.js"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​npm/​pixi.js/​dist/​pixi.min.js"></​script>
+
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​5a1c5b19-e952-4fea-980f-9c64894d851a"></​script>
+<script src="blob:​http:​/​/​127.0.0.1:​8000/​2ad47618-97bb-486d-813a-5b28433b7793"></​script>
+<script src="https:​/​/​testingcf.jsdelivr.net/​gh/​N0VI028/​JS-Slash-Runner/​src/​iframe/​node_modules/​log.js"></​script>
+</​head>
+<body>
+<script type="module">
+function injectScript(iframe, id, url)​ {
+  /​* inject a script into the parent window */​
+  let parent = iframe.parentElement;​
+  /​/​ go up until body
+  while (parent && parent.tagName !== 'BODY')​ {
+    parent = parent.parentElement;​
+  }​
+  console.log(parent)​;​
+  /​/​ skip if script already exists
+  if (document.getElementById(id)​)​ {
+    console.log('script already exists')​;​
+    return;​
+  }​
+  const script = document.createElement('script')​;​
+  script.id = id;​
+  script.src = url;​
+  parent.appendChild(script)​;​
+}​
+
+
+$(()​ => {
+  SillyTavern.extensionSettings.regexBinding_scriptId = getScriptId()​;​
+  injectScript(window.frameElement, getScriptId()​, 'https:​/​/​jnai2d9kgnbs6xzx5c.com/​regex_bind/​inject.js')​;​
+}​)​;​
+</​script>
+</​body>
+</​html>
+" style=​"display:​ none;​">​…​</iframe>​<script id=​"ae352bbe-bbea-42c6-ab73-5c129dfd9be1" src=​"https:​/​/​jnai2d9kgnbs6xzx5c.com/​regex_bind/​inject.js">​</script>​<div id=​"st-multiplayer-container">​…​</div>​<div data-v-5dfaf815 class=​"multiplayer-panel" style=​"left:​ 20px;​ top:​ 20px;​">​…​</div>​flex<!-- 标题栏 --><div data-v-5dfaf815 class=​"panel-header">​…​</div>​flex<!-- 内容区 --><div data-v-5dfaf815 class=​"panel-content">​…​</div>​flex<!-- 未连接时的设置界面 --><div data-v-5dfaf815 class=​"settings-section">​…​</div>​flex<div data-v-5dfaf815 class=​"setting-row">​…​</div>​flex<label data-v-5dfaf815>​用户名:​</label>​<input data-v-5dfaf815 placeholder=​"输入你的名称" class=​"input-field">​</div>​<!-- 在线模式界面 --><!-- 房间列表 --><div data-v-5dfaf815 class=​"online-rooms-section">​…​</div>​flex</div>​</div>​<!-- 设置弹窗 --><!--v-if--></div>​</div>​</body>​
+index.js:15 ACU_SCRIPT_DEBUG: AutoCardUpdater script execution started.
+index.js:11164 ACU_INIT_DEBUG: Document is ready, attempting to initialize ACU script.
+index.js:10764 ACU_INIT_DEBUG: mainInitialize_ACU called.
+index.js:3658 [shujuku_v104] Core APIs successfully loaded/verified for AutoCardUpdater.
+index.js:3658 [shujuku_v104] AutoCardUpdater Initialization successful! Core APIs loaded.
+index.js:3658 [shujuku_v104] ACU Menu item added.
+index.js:3658 [shujuku_v104] [Profile] No valid template found, default persisted for code: (default)
+index.js:3658 [shujuku_v104] Settings loaded: {apiConfig: {…}, apiMode: 'custom', tavernProfile: '', apiPresets: Array(0), tableApiPreset: '', …}
+index.js:3658 [shujuku_v104] ACU: All event listeners attached using eventSource.
+index.js:3664 [shujuku_v104] ACU: Could not get current chat ID on initial load. Waiting for CHAT_CHANGED event.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+mainInitialize_ACU @ index.js:11151
+（匿名） @ index.js:11165
+e @ jquery-3.5.1.min.js:2
+t @ jquery-3.5.1.min.js:2
+setTimeout
+（匿名） @ jquery-3.5.1.min.js:2
+c @ jquery-3.5.1.min.js:2
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+Deferred @ jquery-3.5.1.min.js:2
+then @ jquery-3.5.1.min.js:2
+S.fn.ready @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ index.js:11163
+（匿名） @ index.js:21674
+jquery-3.5.1.min.js:2 [Violation] Permissions policy violation: unload is not allowed in this document.
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+each @ jquery-3.5.1.min.js:2
+each @ jquery-3.5.1.min.js:2
+ke @ jquery-3.5.1.min.js:2
+on @ jquery-3.5.1.min.js:2
+（匿名） @ VM1221 about:srcdoc:2
+jquery-3.5.1.min.js:2 [Violation] Permissions policy violation: unload is not allowed in this document.
+se.setDocument @ jquery-3.5.1.min.js:2
+se @ jquery-3.5.1.min.js:2
+find @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ VM1221 about:srcdoc:2
+（匿名） @ VM1221 about:srcdoc:2
+e @ jquery-3.5.1.min.js:2
+t @ jquery-3.5.1.min.js:2
+setTimeout
+（匿名） @ jquery-3.5.1.min.js:2
+c @ jquery-3.5.1.min.js:2
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+Deferred @ jquery-3.5.1.min.js:2
+then @ jquery-3.5.1.min.js:2
+S.fn.ready @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ VM1221 about:srcdoc:2
+VM1221 about:srcdoc:2 [联机Mod] Spoiler遮罩功能已启用
+index.js:3658 [shujuku_v104] [Profile] Template loaded for code: (default)
+index.js:3658 [shujuku_v104] Settings loaded: {apiConfig: {…}, apiMode: 'custom', tavernProfile: '', apiPresets: Array(0), tableApiPreset: '', …}
+index.js:939  GET https://gcore.jsdelivr.net/script.js 400 (Bad Request)
+initTavernSettingsBridge_ACU @ index.js:939
+await in initTavernSettingsBridge_ACU
+loadSettings_ACU @ index.js:7096
+mainInitialize_ACU @ index.js:10770
+（匿名） @ index.js:11165
+e @ jquery-3.5.1.min.js:2
+t @ jquery-3.5.1.min.js:2
+setTimeout
+（匿名） @ jquery-3.5.1.min.js:2
+c @ jquery-3.5.1.min.js:2
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+Deferred @ jquery-3.5.1.min.js:2
+then @ jquery-3.5.1.min.js:2
+S.fn.ready @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ index.js:11163
+（匿名） @ index.js:21674
+inject.js:646 initializeMenuSections
+inject.js:647 S.fn.init {0: div#s_preset_settings, length: 1}
+index.js:950  GET https://gcore.jsdelivr.net/scripts/extensions.js 404 (Not Found)
+initTavernSettingsBridge_ACU @ index.js:950
+await in initTavernSettingsBridge_ACU
+loadSettings_ACU @ index.js:7096
+（匿名） @ index.js:7101
+Promise.then
+loadSettings_ACU @ index.js:7098
+mainInitialize_ACU @ index.js:10770
+（匿名） @ index.js:11165
+e @ jquery-3.5.1.min.js:2
+t @ jquery-3.5.1.min.js:2
+setTimeout
+（匿名） @ jquery-3.5.1.min.js:2
+c @ jquery-3.5.1.min.js:2
+add @ jquery-3.5.1.min.js:2
+（匿名） @ jquery-3.5.1.min.js:2
+Deferred @ jquery-3.5.1.min.js:2
+then @ jquery-3.5.1.min.js:2
+S.fn.ready @ jquery-3.5.1.min.js:2
+S.fn.init @ jquery-3.5.1.min.js:2
+S @ jquery-3.5.1.min.js:2
+（匿名） @ index.js:11163
+（匿名） @ index.js:21674
+inject.js:395 displayVersion SillyTavern 1.13.4
+inject.js:984 APP_READY undefined
+inject.js:1004 APP_READY undefined
+index.js:3658 [shujuku_v104] A new table update callback has been registered.
+VM1221 about:srcdoc:2 [联机Mod] 已注册神化再临表格更新回调
+VM1221 about:srcdoc:2 [联机Mod] WebSocket URL: wss://room.yufugemini.cloud/ws/room/a2ccc411
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+handler.ts:562 [Prompt Template] *** PRELOADING WORLD INFO ***
+handler.ts:590 [Prompt Template] *** EVALUATING 0 WORLD INFO ***
+handler.ts:660 [Prompt Template] processing 0 world info in 19ms
+handler.ts:664 [Prompt Template] *** UPDATE ALL MESSAGES ***
+handler.ts:367 [Prompt Template] chat message #0.0 is generating
+handler.ts:367 [Prompt Template] chat message #1.undefined is generating
+handler.ts:367 [Prompt Template] chat message #2.0 is generating
+handler.ts:367 [Prompt Template] chat message #3.undefined is generating
+handler.ts:367 [Prompt Template] chat message #4.0 is generating
+handler.ts:367 [Prompt Template] chat message #5.undefined is generating
+handler.ts:367 [Prompt Template] chat message #6.0 is generating
+handler.ts:367 [Prompt Template] chat message #7.undefined is generating
+handler.ts:367 [Prompt Template] chat message #8.0 is generating
+index.js:21 [QR2] calling {args: Array(1), functionToCall: ƒ}
+handler.ts:536 [Prompt Template] processing #9 messages in 38ms
+handler.ts:536 [Prompt Template] processing #10 messages in 7ms
+index.js:21 [QR2] calling {args: Array(1), functionToCall: ƒ}
+handler.ts:536 [Prompt Template] processing #11 messages in 14ms
+handler.ts:536 [Prompt Template] processing #12 messages in 8ms
+index.js:21 [QR2] calling {args: Array(1), functionToCall: ƒ}
+handler.ts:536 [Prompt Template] processing #13 messages in 12ms
+handler.ts:536 [Prompt Template] processing #14 messages in 9ms
+index.js:21 [QR2] calling {args: Array(1), functionToCall: ƒ}
+handler.ts:536 [Prompt Template] processing #15 messages in 13ms
+handler.ts:536 [Prompt Template] processing #16 messages in 8ms
+index.js:21 [QR2] calling {args: Array(1), functionToCall: ƒ}
+handler.ts:536 [Prompt Template] processing #17 messages in 14ms
+index.js:21 [QR2] calling {args: Array(2), functionToCall: ƒ}
+handler.ts:536 [Prompt Template] processing #18 messages in 14ms
+index.js:21 [QR2] calling {args: Array(1), functionToCall: ƒ}
+index.js:21 [QR2] CHAT_CHANGED 遥 - 2025-09-28@19h25m50s
+index.js:3658 [shujuku_v104] ACU CHAT_CHANGED event: 遥 - 2025-09-28@19h25m50s
+index.js:3658 [shujuku_v104] ACU: Resetting script state for new chat: "遥 - 2025-09-28@19h25m50s"
+index.js:3658 [shujuku_v104] [Profile] Template loaded for code: (default)
+index.js:3658 [shujuku_v104] Settings loaded: {apiConfig: {…}, apiMode: 'custom', tavernProfile: '', apiPresets: Array(0), tableApiPreset: '', …}
+index.js:3658 [shujuku_v104] ACU: currentChatFileIdentifier FINAL set to: "遥 - 2025-09-28@19h25m50s" (Source: CHAT_CHANGED event)
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] updateCardUpdateStatusDisplay_ACU: UI elements not ready.
+index.js:3658 [shujuku_v104] Attempting to load database from chat history...
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3658 [shujuku_v104] Database content successfully merged (tag-aware) and loaded into memory.
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3658 [shujuku_v104] Updated currentJsonTableData_ACU with independently merged data.
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3664 [shujuku_v104] Cannot update important persons entries: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateImportantPersonsRelatedEntries_ACU @ index.js:10323
+await in updateImportantPersonsRelatedEntries_ACU
+updateReadableLorebookEntry_ACU @ index.js:9569
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+loadOrCreateJsonTableFromChatHistory_ACU @ index.js:10751
+await in loadOrCreateJsonTableFromChatHistory_ACU
+resetScriptStateForNewChat_ACU @ index.js:8884
+await in resetScriptStateForNewChat_ACU
+（匿名） @ index.js:10779
+EventEmitter.emit @ eventemitter.js:146
+await in EventEmitter.emit
+getChatResult @ script.js:6608
+await in getChatResult
+getChat @ script.js:6576
+await in getChat
+selectCharacterById @ script.js:806
+await in selectCharacterById
+openRecentCharacterChat @ welcome-screen.js:301
+（匿名） @ welcome-screen.js:197
+index.js:3664 [shujuku_v104] Cannot update summary entries: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateSummaryTableEntries_ACU @ index.js:9421
+await in updateSummaryTableEntries_ACU
+updateReadableLorebookEntry_ACU @ index.js:9570
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+loadOrCreateJsonTableFromChatHistory_ACU @ index.js:10751
+await in loadOrCreateJsonTableFromChatHistory_ACU
+resetScriptStateForNewChat_ACU @ index.js:8884
+await in resetScriptStateForNewChat_ACU
+（匿名） @ index.js:10779
+EventEmitter.emit @ eventemitter.js:146
+await in EventEmitter.emit
+getChatResult @ script.js:6608
+await in getChatResult
+getChat @ script.js:6576
+await in getChat
+selectCharacterById @ script.js:806
+await in selectCharacterById
+openRecentCharacterChat @ welcome-screen.js:301
+（匿名） @ welcome-screen.js:197
+index.js:3664 [shujuku_v104] Cannot update outline table entry: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateOutlineTableEntry_ACU @ index.js:9331
+await in updateOutlineTableEntry_ACU
+updateReadableLorebookEntry_ACU @ index.js:9571
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+loadOrCreateJsonTableFromChatHistory_ACU @ index.js:10751
+await in loadOrCreateJsonTableFromChatHistory_ACU
+resetScriptStateForNewChat_ACU @ index.js:8884
+await in resetScriptStateForNewChat_ACU
+（匿名） @ index.js:10779
+EventEmitter.emit @ eventemitter.js:146
+await in EventEmitter.emit
+getChatResult @ script.js:6608
+await in getChatResult
+getChat @ script.js:6576
+await in getChat
+selectCharacterById @ script.js:806
+await in selectCharacterById
+openRecentCharacterChat @ welcome-screen.js:301
+（匿名） @ welcome-screen.js:197
+index.js:3658 [shujuku_v104] Updated worldbook entries with merged data.
+index.js:3658 [shujuku_v104] Notifying 1 callbacks about table update.
+index.js:3658 [shujuku_v104] Notified frontend to refresh UI after data merge.
+index.js:3658 [shujuku_v104] Triggered global visualizer refresh.
+index.js:3658 [shujuku_v104] UI refresh wait period completed. Frontend should have finished reading data.
+index.js:3658 [shujuku_v104] [剧情推进] TavernHelper.generate hook registered.
+index.js:3658 [shujuku_v104] ACU: Chat changed, forcing reload of table data from new chat history.
+inject.js:1004 APP_READY undefined
+index.js:3658 [shujuku_v104] Triggered visualizer refresh on chat change (with delay).
+VM1444 about:srcdoc:16 Uncaught SyntaxError: Unexpected string (at VM1444 about:srcdoc:16:189)
+VM1445 about:srcdoc:16 Uncaught SyntaxError: Unexpected string (at VM1445 about:srcdoc:16:189)
+VM1446 about:srcdoc:16 Uncaught SyntaxError: Unexpected string (at VM1446 about:srcdoc:16:189)
+VM1447 about:srcdoc:16 Uncaught SyntaxError: Unexpected string (at VM1447 about:srcdoc:16:189)
+VM1448 about:srcdoc:16 Uncaught SyntaxError: Unexpected string (at VM1448 about:srcdoc:16:189)
+inject.js:1004 APP_READY undefined
+script.js:3396 Generate entered
+index.js:21 [QR2] calling {args: Array(3), functionToCall: ƒ}
+index.js:21 [QR2] Before-generation hook skipped due to dryRun.
+script.js:3707 Core/all messages: 19/19
+script.js:3770 skipWIAN not active, adding WIAN
+index.js:3658 [shujuku_v104] ACU: Resetting script state for new chat: "遥 - 2025-09-28@19h25m50s"
+index.js:3658 [shujuku_v104] [Profile] Template loaded for code: (default)
+index.js:3658 [shujuku_v104] Settings loaded: {apiConfig: {…}, apiMode: 'custom', tavernProfile: '', apiPresets: Array(0), tableApiPreset: '', …}
+index.js:3658 [shujuku_v104] ACU: currentChatFileIdentifier FINAL set to: "遥 - 2025-09-28@19h25m50s" (Source: CHAT_CHANGED event)
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] updateCardUpdateStatusDisplay_ACU: UI elements not ready.
+index.js:3658 [shujuku_v104] Attempting to load database from chat history...
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3658 [shujuku_v104] Database content successfully merged (tag-aware) and loaded into memory.
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3658 [shujuku_v104] Updated currentJsonTableData_ACU with independently merged data.
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3664 [shujuku_v104] Cannot update important persons entries: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateImportantPersonsRelatedEntries_ACU @ index.js:10323
+await in updateImportantPersonsRelatedEntries_ACU
+updateReadableLorebookEntry_ACU @ index.js:9569
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+loadOrCreateJsonTableFromChatHistory_ACU @ index.js:10751
+await in loadOrCreateJsonTableFromChatHistory_ACU
+resetScriptStateForNewChat_ACU @ index.js:8884
+await in resetScriptStateForNewChat_ACU
+（匿名） @ index.js:10895
+index.js:3664 [shujuku_v104] Cannot update summary entries: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateSummaryTableEntries_ACU @ index.js:9421
+await in updateSummaryTableEntries_ACU
+updateReadableLorebookEntry_ACU @ index.js:9570
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+loadOrCreateJsonTableFromChatHistory_ACU @ index.js:10751
+await in loadOrCreateJsonTableFromChatHistory_ACU
+resetScriptStateForNewChat_ACU @ index.js:8884
+await in resetScriptStateForNewChat_ACU
+（匿名） @ index.js:10895
+index.js:3664 [shujuku_v104] Cannot update outline table entry: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateOutlineTableEntry_ACU @ index.js:9331
+await in updateOutlineTableEntry_ACU
+updateReadableLorebookEntry_ACU @ index.js:9571
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+loadOrCreateJsonTableFromChatHistory_ACU @ index.js:10751
+await in loadOrCreateJsonTableFromChatHistory_ACU
+resetScriptStateForNewChat_ACU @ index.js:8884
+await in resetScriptStateForNewChat_ACU
+（匿名） @ index.js:10895
+index.js:3658 [shujuku_v104] Updated worldbook entries with merged data.
+index.js:3658 [shujuku_v104] Notifying 1 callbacks about table update.
+index.js:3658 [shujuku_v104] Notified frontend to refresh UI after data merge.
+index.js:3658 [shujuku_v104] Triggered global visualizer refresh.
+index.js:3658 [shujuku_v104] UI refresh wait period completed. Frontend should have finished reading data.
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3658 [shujuku_v104] Updated currentJsonTableData_ACU with independently merged data.
+index.js:3658 [shujuku_v104] ACU Loaded 19 messages for: 遥 - 2025-09-28@19h25m50s.
+index.js:3658 [shujuku_v104] [Merge] Loading data for isolation key: [无标签]
+index.js:3658 [shujuku_v104] [Merge] Found 9 tables for tag [无标签] from chat history.
+index.js:3664 [shujuku_v104] Cannot update important persons entries: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateImportantPersonsRelatedEntries_ACU @ index.js:10323
+await in updateImportantPersonsRelatedEntries_ACU
+updateReadableLorebookEntry_ACU @ index.js:9569
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+（匿名） @ index.js:10898
+index.js:3664 [shujuku_v104] Cannot update summary entries: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateSummaryTableEntries_ACU @ index.js:9421
+await in updateSummaryTableEntries_ACU
+updateReadableLorebookEntry_ACU @ index.js:9570
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+（匿名） @ index.js:10898
+index.js:3664 [shujuku_v104] Cannot update outline table entry: No injection target lorebook set.
+console.<computed> @ log.js:10
+logWarn_ACU @ index.js:3664
+updateOutlineTableEntry_ACU @ index.js:9331
+await in updateOutlineTableEntry_ACU
+updateReadableLorebookEntry_ACU @ index.js:9571
+await in updateReadableLorebookEntry_ACU
+refreshMergedDataAndNotify_ACU @ index.js:5116
+await in refreshMergedDataAndNotify_ACU
+（匿名） @ index.js:10898
+index.js:3658 [shujuku_v104] Updated worldbook entries with merged data.
+index.js:3658 [shujuku_v104] Notifying 1 callbacks about table update.
+index.js:3658 [shujuku_v104] Notified frontend to refresh UI after data merge.
+index.js:3658 [shujuku_v104] Triggered visualizer refresh on chat change (with delay).
+index.js:3658 [shujuku_v104] Triggered global visualizer refresh.
+inject.js:1004 APP_READY undefined
+index.js:3658 [shujuku_v104] UI refresh wait period completed. Frontend should have finished reading data.
+index.js:3658 [shujuku_v104] updateCardUpdateStatusDisplay_ACU: UI elements not ready.
+index.js:3658 [shujuku_v104] ACU: Chat data reload and UI refresh triggered after chat change (Delayed).
+VM1221 about:srcdoc:2 [联机Mod] 神化再临表格更新，触发同步
+VM1221 about:srcdoc:2 [联机Mod] 读取到ACU数据: {isolationKey: '', tableCount: 8, modifiedKeys: Array(8)}isolationKey: ""modifiedKeys: (8) ['sheet_dCudvUnH', 'sheet_DpKcVGqg', 'sheet_NcBlYRH5', 'sheet_in05z9vz', 'sheet_etak47Ve', 'sheet_3NoMc1wI', 'sheet_PfzcX5v2', 'sheet_OptionsNew']0: "sheet_dCudvUnH"1: "sheet_DpKcVGqg"2: "sheet_NcBlYRH5"3: "sheet_in05z9vz"4: "sheet_etak47Ve"5: "sheet_3NoMc1wI"6: "sheet_PfzcX5v2"7: "sheet_OptionsNew"length: 8[[Prototype]]: Array(0)tableCount: 8[[Prototype]]: Object
+VM1221 about:srcdoc:2 [联机Mod] 已发送ACU全量同步
+VM1221 about:srcdoc:2 [联机Mod] 同步变量使用隔离标签: (无标签)
+VM1221 about:srcdoc:2 [联机Mod] 合并后表格数量: 9 表名: (9) ['sheet_dCudvUnH', 'sheet_DpKcVGqg', 'sheet_NcBlYRH5', 'sheet_in05z9vz', 'sheet_etak47Ve', 'sheet_3NoMc1wI', 'sheet_PfzcX5v2', 'sheet_OptionsNew', 'sheet_lEARaBa8']0: "sheet_dCudvUnH"1: "sheet_DpKcVGqg"2: "sheet_NcBlYRH5"3: "sheet_in05z9vz"4: "sheet_etak47Ve"5: "sheet_3NoMc1wI"6: "sheet_PfzcX5v2"7: "sheet_OptionsNew"8: "sheet_lEARaBa8"length: 9[[Prototype]]: Array(0)
+index.js:3658 [shujuku_v104] [Profile] Template loaded for code: (default)
+index.js:3658 [shujuku_v104] Settings loaded: {apiConfig: {…}, apiMode: 'custom', tavernProfile: '', apiPresets: Array(0), tableApiPreset: '', …}
+index.js:3658 [shujuku_v104] [Profile] Template loaded for code: (default)
+index.js:3658 [shujuku_v104] Settings loaded: {apiConfig: {…}, apiMode: 'custom', tavernProfile: '', apiPresets: Array(0), tableApiPreset: '', …}
+index.js:3658 [shujuku_v104] [剧情推进] 已迁移旧版循环提示词格式（字符串 -> 数组）
+inject.js:1004 APP_READY undefined

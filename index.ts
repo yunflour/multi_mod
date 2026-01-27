@@ -362,9 +362,19 @@ function setupTavernEventListeners() {
   });
 
   // 房主：收到历史同步请求
-  eventOn('multiplayer_sync_history_request', async (requesterId: string) => {
+  eventOn('multiplayer_sync_history_request', async (data: { userId?: string; depth?: number } | string) => {
     const store = useMultiplayerStore();
     if (!store.isHost) return;
+    
+    // 兼容旧版本：如果data是字符串，说明是旧版本直接传userId
+    let requesterId: string;
+    let depth: number = 0;
+    if (typeof data === 'string') {
+      requesterId = data;
+    } else {
+      requesterId = data.userId || '';
+      depth = data.depth || 0;
+    }
     
     try {
       // 获取所有聊天消息
@@ -374,11 +384,19 @@ function setupTavernEventListeners() {
         return;
       }
       
-      const messages = getChatMessages(`0-${lastId}`);
+      // 计算实际获取的消息范围
+      let startId = 0;
+      if (depth > 0 && lastId >= depth) {
+        startId = lastId - depth + 1;
+      }
+      
+      const messages = getChatMessages(`${startId}-${lastId}`);
       const historyData = messages.map((msg: { role: string; message: string }) => ({
         role: msg.role,
         message: msg.message,
       }));
+      
+      store.addLog('system', '系统', `准备发送${historyData.length}条历史消息 (深度限制: ${depth || '无'})`);
       
       // 发送给请求者
       store.sendHistoryToUser(requesterId, historyData);
