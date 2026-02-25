@@ -104,6 +104,9 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
   /** 房主ID */
   const hostId = ref<string | null>(null);
   
+  /** 当前网络用户ID（响应式） */
+  const currentNetworkUserId = ref<string>('');
+  
   /** 变量模式（房主设置）: 'none' = 无变量, 'mvu' = MVU变量, 'apotheosis' = 神化再临 */
   const VARIABLE_MODE_KEY = 'st_multiplayer_variable_mode';
   const savedVariableMode = localStorage.getItem(VARIABLE_MODE_KEY) as 'none' | 'mvu' | 'apotheosis' | null;
@@ -123,13 +126,13 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
   
   /** 当前用户ID */
   const currentUserId = computed(() => {
-    return networkManager?.userId || '';
+    return currentNetworkUserId.value;
   });
   
   /** 是否是房主 */
   const isHost = computed(() => {
-    if (!networkManager) return false;
-    return hostId.value === networkManager.userId;
+    if (!currentNetworkUserId.value) return false;
+    return hostId.value === currentNetworkUserId.value;
   });
   
   /** 所有用户是否都已提交（收集数 = 用户总数） */
@@ -164,19 +167,18 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     }
   }
   
-  /** 初始化网络管理器（复用已有实例，避免重复创建） */
+  /** 初始化网络管理器（每次连接都重新创建以获取新的 userId） */
   function initNetworkManager() {
-    // 如果已有 manager，先断开旧连接但复用实例
+    // 如果已有 manager，先断开并清理
     if (networkManager) {
-      // 已存在 manager，只需断开旧连接
       if (networkManager.isConnected) {
-        console.log('[联机Mod] 复用已有 NetworkManager，断开旧连接');
         networkManager.disconnect();
       }
-      return;  // 复用现有实例
+      // 不再复用，每次都创建新实例
+      networkManager = null;
     }
     
-    // 首次创建
+    // 每次都创建新实例以获取新的 userId
     networkManager = useWebSocket.value 
       ? new WebSocketNetworkManager() 
       : new LocalNetworkManager();
@@ -195,6 +197,9 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
         isConnectionStable.value = stable;
       });
     }
+    
+    // 更新响应式的 userId
+    currentNetworkUserId.value = networkManager.userId;
   }
   
   /** 启动服务端 */

@@ -625,6 +625,10 @@ watch(
 );
 
 function toggleSettings() {
+  // 如果要打开设置弹窗,且当前悬浮窗是最小化状态,则先展开悬浮窗
+  if (!showSettings.value && isMinimized.value) {
+    isMinimized.value = false;
+  }
   showSettings.value = !showSettings.value;
 }
 

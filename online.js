@@ -59,13 +59,29 @@ class Room {
         this.users = new Map();
         this.hostId = null;
         
-        // 空闲定时器
+        // 空闲定时器 - 房间创建时启动，用于清理无人加入的房间
         this.idleTimer = null;
+        this.startIdleTimer();
         
-        // 用户超时定时器（15秒无活动断开）
+        // 用户超时定时器（60秒无活动断开）
         this.userTimeoutTimer = setInterval(() => {
             this.checkUserTimeout();
         }, 3000);
+    }
+    
+    // 启动空闲定时器
+    startIdleTimer() {
+        // 清除现有定时器
+        if (this.idleTimer) {
+            clearTimeout(this.idleTimer);
+        }
+        // 设置新定时器
+        this.idleTimer = setTimeout(() => {
+            if (this.users.size === 0) {
+                log('room', this.id, `房间空闲超时 (${CONFIG.roomIdleTimeout / 1000}秒无人加入)，自动删除`);
+                deleteRoom(this.id);
+            }
+        }, CONFIG.roomIdleTimeout);
     }
     
     // 检查用户超时
@@ -236,6 +252,8 @@ class Room {
             this.hostId = newHost.id;
         } else if (this.users.size === 0) {
             this.hostId = null;
+            // 房间变空，启动空闲定时器
+            this.startIdleTimer();
         }
         
         return { user, wasHost, newHost };
